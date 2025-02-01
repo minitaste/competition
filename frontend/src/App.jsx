@@ -5,6 +5,7 @@ import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
+import Header from "./components/Header";
 
 function Logout() {
   localStorage.clear();
@@ -19,6 +20,7 @@ function RegisterAndLogout() {
 const App = () => {
   return (
     <BrowserRouter>
+    <Header />
       <Routes>
         <Route
           path="/"

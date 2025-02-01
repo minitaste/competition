@@ -1,1 +1,16 @@
 @import "tailwindcss";
+@theme {
+  --background-image-hero-pattern: url("/thumb-1920-284804.jpg");
+}
+
+
+@layer components {
+  .pattern {
+    @apply bg-hero-pattern w-full h-screen bg-center bg-cover absolute z-0;
+  }
+
+  .wrapper {
+    @apply relative z-10;
+  }
+  
+}
