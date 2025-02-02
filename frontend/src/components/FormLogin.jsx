@@ -8,27 +8,36 @@ function Form({ route, method }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const name = method === "login" ? "Login" : "Register";
+  const isLogin = method === "login";
+  const name = isLogin ? "Log in" : "Register";
 
   const handleSubmit = async (e) => {
-    setLoading(true);
     e.preventDefault();
+    setLoading(true);
 
     try {
-      const response = await api.post(route, { username, password });
+      const payload = { username, password };
+      if (!isLogin) payload.email = email;
+      const response = await api.post(route, payload);
 
-      if (method == "login") {
+      if (method === "login") {
         localStorage.setItem(ACCESS_TOKEN, response.data.access);
         localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
         navigate("/");
       } else {
-        navigate("/login");
+        const loginResponse = await api.post("/api/token/", {
+          username,
+          password,
+        });
+        localStorage.setItem(ACCESS_TOKEN, loginResponse.data.access);
+        localStorage.setItem(REFRESH_TOKEN, loginResponse.data.refresh);
+        navigate("/");
       }
     } catch (error) {
-      alert(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -37,8 +46,8 @@ function Form({ route, method }) {
   return (
     <div className="mt-30 flex min-h-full max-w-lg flex-1 flex-col justify-center items-center mx-auto px-6 py-12 lg:px-8 text-white bg-zinc-800/70 rounded-2xl">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight ">
-          Sign in to your account
+        <h2 className="mt-2 text-center text-2xl/9 font-bold tracking-tight ">
+          {name}
         </h2>
       </div>
 
@@ -55,27 +64,28 @@ function Form({ route, method }) {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username"
+                required
               />
             </div>
           </div>
 
-          {/* <div>
-            <label
-              htmlFor="email"
-              className="block text-sm/6 font-medium "
-            >
+          {!isLogin && (
+            <div>
+              <label htmlFor="email" className="block text-sm/6 font-medium ">
                 Email
-            </label>
-            <div className="mt-2">
-              <input
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base  outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-              />
+              </label>
+              <div className="mt-2">
+                <input
+                  className="block w-full rounded-md px-3 py-1.5 text-base  outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email"
+                  required
+                />
+              </div>
             </div>
-          </div> */}
+          )}
 
           <div className="mt-2">
             <div className="flex items-center justify-between">
@@ -94,6 +104,7 @@ function Form({ route, method }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
+                required
               />
             </div>
           </div>
@@ -103,7 +114,7 @@ function Form({ route, method }) {
               type="submit"
               className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
             >
-              Sign in
+              {name}
             </button>
           </div>
         </form>

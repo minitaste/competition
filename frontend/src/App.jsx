@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -8,14 +8,12 @@ import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 
 function Logout() {
-  localStorage.clear();
+  useEffect(() => {
+    localStorage.clear();
+  }, []);
   return <Navigate to="/login/" />;
 }
 
-function RegisterAndLogout() {
-  localStorage.clear();
-  return <Register />;
-}
 
 const App = () => {
   return (
@@ -32,7 +30,7 @@ const App = () => {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
-        <Route path="/register" element={<RegisterAndLogout />} />
+        <Route path="/register" element={<Register />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

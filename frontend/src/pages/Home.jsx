@@ -1,11 +1,12 @@
-import React from 'react'
+import React from "react";
+import Tournaments from "../components/Tournaments";
 
 const Home = () => {
   return (
-    <div>
-      Home page
+    <div className="text-center text-3xl text-white">
+      <Tournaments />
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

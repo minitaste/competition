@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator
 from django.contrib.auth.models import User
 
 
@@ -8,14 +10,24 @@ class Tournament(models.Model):
     is_over = models.BooleanField(default=False)
     start = models.DateField()
     teams = models.ManyToManyField('Team', blank=True, related_name='tournaments')
-    teams_limit = models.PositiveIntegerField()
+    teams_limit = models.PositiveIntegerField(validators=[MaxValueValidator(32)])
     location = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name}"
-    # class Meta:
-    #     ordering = ["-created_at"] 
+
+    def validate_teams_limit(self):
+        if self.teams_limit > 32:
+            raise ValidationError("Can`t be more then 32 teams.")
+
+    def clean(self):
+        self.validate_teams_limit()
+        super().clean()
+        
+        
+    class Meta:
+        ordering = ['start']
 
 
 class Team(models.Model):
@@ -50,4 +62,3 @@ class Statistic(models.Model):
 
     def __str__(self):
         return f"{self.player.username} stats"
-

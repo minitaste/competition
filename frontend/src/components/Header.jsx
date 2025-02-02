@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { ACCESS_TOKEN } from "../constants";
 
-const Header = ({ showLogin, setShowLogin }) => {
-  const handleLoginClick = () => {
-    setShowLogin(true);
+const Header = () => {
+  const [accessToken, setAccessToken] = useState(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    setAccessToken(localStorage.getItem(ACCESS_TOKEN));
+  }, [location]);
+
+  const handleLogout = () => {
+    localStorage.removeItem(ACCESS_TOKEN);
+    setAccessToken(null);
   };
 
   return (
@@ -10,36 +20,51 @@ const Header = ({ showLogin, setShowLogin }) => {
       <nav className="container mx-auto flex justify-between">
         <div className="flex-1 flex space-x-2">
           <div className="flex hover:opacity-50 space-x-2">
-            <img className="h-6" src="basketball1.png" />
+            <img className="h-6" src="basketball1.png" alt="Logo" />
             <span className="cursor-pointer">3X3 Mini</span>
           </div>
         </div>
-        <div className="flex justify-between min-w-96">
+        <div className="flex justify-between space-x-4">
           <button className="flex justify-around w-32 hover:opacity-50 cursor-pointer">
             Tournaments
-            <img className="h-6" src="trophy.png" />
+            <img className="h-6" src="trophy.png" alt="Trophy" />
           </button>
-          <button
-            onClick={handleLoginClick}
-            className="flex justify-around w-20 cursor-pointer hover:opacity-50"
-          >
-            Log in
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6"
+          {accessToken ? (
+            <Link
+              to="/logout"
+              onClick={handleLogout}
+              className="cursor-pointer hover:opacity-50"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"
-              />
-            </svg>
-          </button>
-          <button className="cursor-pointer hover:opacity-50">Sign Up</button>
+              Logout
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="flex cursor-pointer hover:opacity-50"
+              >
+                Log in
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="size-6 ml-1"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+                  />
+                </svg>
+              </Link>
+
+              <Link to="/register" className="cursor-pointer hover:opacity-50">
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
       </nav>
     </header>
