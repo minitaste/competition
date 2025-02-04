@@ -7,7 +7,7 @@ from .models import User, Tournament, Team
 from .serializers import UserSerializer, TournamentSerializer, TeamSerializer
 
 
-class CreateUserView(generics.CreateAPIView):
+class CreateUserView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]

@@ -37,7 +37,7 @@ class Team(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Team {self.name}"
+        return f"{self.name}"
     
     def validate_teams_players(self):
         if self.players < 3:

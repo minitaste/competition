@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
 import Header from "./components/Header";
+import Participate from "./components/Participate";
 
 function Logout() {
   useEffect(() => {
@@ -18,13 +19,22 @@ function Logout() {
 const App = () => {
   return (
     <BrowserRouter>
-    <Header />
+      <Header />
       <Routes>
         <Route
           path="/"
-          element={
+        element={
             <ProtectedRoute>
               <Home />
+
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/participate"
+          element={
+            <ProtectedRoute>
+              <Participate />
             </ProtectedRoute>
           }
         />

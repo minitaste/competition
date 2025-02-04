@@ -44,7 +44,6 @@ const Tournaments = () => {
               <p>Event start: {tournament.start}</p>
             </div>
             <p>Location: {tournament.location}</p>
-            <p>Teams: {tournament.teams}</p>
             <div className="text-center mt-3 inline-block bg-black px-4 py-1 cursor-pointer rounded-lg text-white hover:text-gray-400 hover:drop-shadow-2xl transition-all duration-200 ease-in-out">
               <a className="text-2xl staatliches">Play</a>
             </div>
