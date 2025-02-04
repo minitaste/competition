@@ -1,9 +1,9 @@
 import React from "react";
-import Tournaments from "../components/Tournaments";
+import Tournaments from "../components/AllTournaments";
 
 const Home = () => {
   return (
-    <div className="text-center text-3xl text-white">
+    <div>
       <Tournaments />
     </div>
   );

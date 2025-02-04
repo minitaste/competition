@@ -1,4 +1,4 @@
-from . models import User, Tournament
+from . models import User, Tournament, Team
 
 from rest_framework import serializers
 from datetime import date
@@ -23,3 +23,9 @@ class TournamentSerializer(serializers.ModelSerializer):
         if value < date.today():
             raise serializers.ValidationError("End can`t be before start.")
         return value
+    
+
+class TeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = "__all__"

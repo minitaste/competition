@@ -24,7 +24,7 @@ class Tournament(models.Model):
     def clean(self):
         self.validate_teams_limit()
         super().clean()
-        
+
         
     class Meta:
         ordering = ['start']
@@ -38,13 +38,23 @@ class Team(models.Model):
 
     def __str__(self):
         return f"Team {self.name}"
+    
+    def validate_teams_players(self):
+        if self.players < 3:
+            raise ValidationError("Can`t be less then 3 players.")
+    def clean(self):
+        super().clean()
+        
+        if self.pk:
+            if self.players.count() < 3:
+                raise ValidationError("Can`t be less than 3 players.")
 
 
 class Match(models.Model):
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)  # Видалено nullable
-    team_1 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='team1_matches')  # Видалено nullable
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)  
+    team_1 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='team1_matches')  
     team_1_score = models.PositiveIntegerField(default=0)
-    team_2 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='team2_matches')  # Видалено nullable
+    team_2 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='team2_matches')  
     team_2_score = models.PositiveIntegerField(default=0)
 
     def __str__(self):

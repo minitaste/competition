@@ -44,7 +44,7 @@ function Form({ route, method }) {
   };
 
   return (
-    <div className="mt-30 flex min-h-full max-w-lg flex-1 flex-col justify-center items-center mx-auto px-6 py-12 lg:px-8 text-white bg-zinc-800/70 rounded-2xl">
+    <div className="mt-30 flex min-h-full max-w-lg flex-1 flex-col justify-center items-center mx-auto px-6 py-12 lg:px-8 text-white bg-zinc-900/70 rounded-2xl">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-2 text-center text-2xl/9 font-bold tracking-tight ">
           {name}

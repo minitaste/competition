@@ -19,9 +19,9 @@ const Header = () => {
     <header className="h-14 fixed top-0 left-0 w-full text-white bg-black/30 px-6 py-4 z-10 border-b-2 border-zinc-900 ">
       <nav className="container mx-auto flex justify-between">
         <div className="flex-1 flex space-x-2">
-          <div className="flex hover:opacity-50 space-x-2">
+          <div className="flex hover:opacity-50 space-x-2 cursor-pointer">
             <img className="h-6" src="basketball1.png" alt="Logo" />
-            <span className="cursor-pointer">3X3 Mini</span>
+            <span>3X3 Mini</span>
           </div>
         </div>
         <div className="flex justify-between space-x-4">

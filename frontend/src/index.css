@@ -1,4 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Staatliches&display=swap');
+
 @import "tailwindcss";
+
 @theme {
   --background-image-hero-pattern: url("/thumb-1920-284804.jpg");
 }
@@ -13,4 +16,8 @@
     @apply relative z-10;
   }
   
+}
+
+.staatliches {
+  font-family: staatliches;
 }
