@@ -18,6 +18,7 @@ class TournamentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tournament
         fields = "__all__"
+        read_only_fields = ['organizer']
               
     def validate_start(self, value):
         if value < date.today():

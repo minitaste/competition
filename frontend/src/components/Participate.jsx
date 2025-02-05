@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
+import { useParams } from "react-router-dom";
 
-const Participate = ({ tournament }) => {
+const Participate = ({}) => {
+  const { tournamentId } = useParams();
+  const [tournament, setTornament] = useState(null);
   const [teamName, setTeamName] = useState("");
   const [players, setPlayers] = useState([]);
   const [search, setSearch] = useState("");
@@ -36,7 +39,7 @@ const Participate = ({ tournament }) => {
     setSelectedPlayers(selectedPlayers.filter((p) => p.id !== player.id));
   };
 
-  const addTeam = (e) => {
+  const createTeam = (e) => {
     e.preventDefault();
     const playersIds = selectedPlayers.map((player) => player.id);
 
@@ -47,6 +50,8 @@ const Participate = ({ tournament }) => {
       })
       .then((response) => {
         console.log("Team added successfuly.", response.data);
+        const newTeamId = response.data.id;
+        addTeam(newTeamId);
         setTeamName("");
         setSelectedPlayers([]);
       })
@@ -58,9 +63,24 @@ const Participate = ({ tournament }) => {
       );
   };
 
+  const addTeam = (teamId) => {
+    api
+      .patch(`/api/tournaments/${tournamentId}/participate/`, {
+        teams: [teamId],
+      })
+      .then((response) => console.log("Success.", response.data))
+      .catch((error) => {
+        console.error(
+          "Error updating tournament:",
+          error.response ? error.response.data : error.message
+        );
+      });
+  };
+
   return (
     <div className="text-3xl">
-      <form onSubmit={addTeam}>
+      {/* <Tournament tournamentId={tournamentId} /> */}
+      <form onSubmit={createTeam}>
         <input
           className="block w-full rounded-md  px-3 py-1.5 text-base  outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
           type="text"
@@ -95,7 +115,10 @@ const Participate = ({ tournament }) => {
                 className="flex justify-between items-center p-2 bg-gray-100 rounded-md mt-1"
               >
                 {player.username}
-                <button type="button" onClick={() => handleRemovePlayer(player)}>
+                <button
+                  type="button"
+                  onClick={() => handleRemovePlayer(player)}
+                >
                   Remove
                 </button>
               </li>

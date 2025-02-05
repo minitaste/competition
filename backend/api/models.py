@@ -9,7 +9,6 @@ class Tournament(models.Model):
     organizer = models.ForeignKey(User, on_delete=models.CASCADE)
     is_over = models.BooleanField(default=False)
     start = models.DateField()
-    teams = models.ManyToManyField('Team', blank=True, related_name='tournaments')
     teams_limit = models.PositiveIntegerField(validators=[MaxValueValidator(32)])
     location = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -32,22 +31,22 @@ class Tournament(models.Model):
 
 class Team(models.Model):
     name = models.CharField(max_length=100)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='teams')
     captain = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     players = models.ManyToManyField(User, related_name='teams', blank=True)  
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name}"
-    
-    def validate_teams_players(self):
-        if self.players < 3:
-            raise ValidationError("Can`t be less then 3 players.")
+                
     def clean(self):
         super().clean()
+
+        if self.players.count() < 3:
+            raise ValidationError("Can`t be less then 3 players.")
         
-        if self.pk:
-            if self.players.count() < 3:
-                raise ValidationError("Can`t be less than 3 players.")
+        if self.tournament.teams.count() >= self.tournament.teams_limit:
+            raise ValidationError(f"Tournament {self.tournament.name} already has maximum teams limit!")
 
 
 class Match(models.Model):
@@ -59,6 +58,14 @@ class Match(models.Model):
 
     def __str__(self):
         return f"{self.team_1} vs {self.team_2} - {self.tournament.name}"
+
+    def clean(self):
+        super().clean()
+        if self.team_1 == self.team_2:
+            raise ValidationError("A team cannot play against itself.")
+
+    class Meta:
+        unique_together = ('tournament', 'team_1', 'team_2')
 
 
 class Statistic(models.Model):

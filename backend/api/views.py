@@ -18,6 +18,9 @@ class Tournaments(generics.ListCreateAPIView):
     serializer_class = TournamentSerializer
     permission_classes = [AllowAny]
 
+    def perform_create(self, serializer):
+        serializer.save(organizer=self.request.user)
+
     def get_permissions(self):
         if self.request.method == "POST": 
             return [IsAuthenticated()]
@@ -39,29 +42,15 @@ class Teams(generics.ListCreateAPIView):
         serializer.save(captain=self.request.user)
 
 
-# переписати це
 class Participate(generics.UpdateAPIView):
     queryset = Tournament.objects.all()
     serializer_class = TournamentSerializer
     permission_classes = [IsAuthenticated]
+    lookup_field = "pk"
 
-    def update(self, *args, **kwargs):
-        tournament = self.get_object()
-        team_name = self.request.data.get("team_name")
-
-        if not team_name:
-            return Response({"error": "No team with this name."})
-
-        try:
-            team = Team.objects.get(name=team_name)
-        except Team.DoesNotExist:
-            return Response({"error": "Team not found"}, status=status.HTTP_404_NOT_FOUND)
-
-
-        if tournament.teams.filter(id=team.id).exists():
-            return Response({"error": "Team is already in the tournament"}, status=status.HTTP_400_BAD_REQUEST)
-
-        tournament.teams.add(team)
-        tournament.save()
-
-        return Response({"success": "Team added successfully."}, status=status.HTTP_200_OK)
+    def perform_update(self, serializer):
+        instance = serializer.instance
+        current_teams = list(instance.teams.all().values_list('id', flat=True))
+        new_teams = self.request.data.get("teams", [])
+        merged_teams = list(set(current_teams + new_teams))
+        serializer.save(teams=merged_teams)

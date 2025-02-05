@@ -25,10 +25,10 @@ const Header = () => {
           </div>
         </div>
         <div className="flex justify-between space-x-4">
-          <button className="flex justify-around w-32 hover:opacity-50 cursor-pointer">
+          <a href="/" className="flex justify-around w-32 hover:opacity-50 cursor-pointer">
             Tournaments
             <img className="h-6" src="trophy.png" alt="Trophy" />
-          </button>
+          </a>
           {accessToken ? (
             <Link
               to="/logout"

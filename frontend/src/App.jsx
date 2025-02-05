@@ -31,7 +31,7 @@ const App = () => {
           }
         />
         <Route
-          path="/participate"
+          path="/participate/:tournamentId"
           element={
             <ProtectedRoute>
               <Participate />

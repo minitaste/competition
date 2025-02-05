@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
-import Participate from "./Participate";
 import Loading from "./Loading";
+import { Link } from "react-router-dom";
+import CreateTournament from "./CreateTournament";
 
 const Tournaments = () => {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     getTournaments();
-  }, []);
+  }, [success]);
 
   const getTournaments = async (e) => {
     setLoading(true);
@@ -27,6 +29,7 @@ const Tournaments = () => {
 
   return (
     <div className="flex flex-col items-center px-6 space-y-3 lg:px-8 text-white">
+      <CreateTournament onSuccess={() => setSuccess((prev) => !prev)} />
       <h2 className="text-center text-2xl">Tournaments</h2>
       {loading && <Loading />}
       {tournaments.map((tournament) => (
@@ -44,9 +47,12 @@ const Tournaments = () => {
               <p>Event start: {tournament.start}</p>
             </div>
             <p>Location: {tournament.location}</p>
-            <div className="text-center mt-3 inline-block bg-black px-4 py-1 cursor-pointer rounded-lg text-white hover:text-gray-400 hover:drop-shadow-2xl transition-all duration-200 ease-in-out">
-              <a className="text-2xl staatliches">Play</a>
-            </div>
+
+            <Link to={`/participate/${tournament.id}`}>
+              <div className="text-center mt-3 inline-block bg-black px-4 py-1 cursor-pointer rounded-lg text-white hover:text-gray-400 hover:drop-shadow-2xl transition-all duration-200 ease-in-out">
+                <span className="text-2xl staatliches">Play</span>
+              </div>
+            </Link>
           </div>
         </div>
       ))}
