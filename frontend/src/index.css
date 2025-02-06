@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Staatliches&display=swap');
-
 @import "tailwindcss";
 
 @theme {
@@ -21,3 +19,34 @@
 .staatliches {
   font-family: staatliches;
 }
+.kanit {
+  font-family: kanit;
+}
+/* Затемнення фону */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+}
+
+/* Модальне вікно */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 1000;
+  width: 90%;
+  max-width: 400px;
+}
+
+
+
+

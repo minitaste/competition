@@ -6,6 +6,18 @@ const Header = () => {
   const [accessToken, setAccessToken] = useState(null);
   const location = useLocation();
 
+    useEffect(() => {
+      const token = localStorage.getItem(ACCESS_TOKEN);
+      setAccessToken(token);
+
+      if (token) {
+        api
+          .get("/api/user/me/")
+          .then((response) => setUser(response.data))
+          .catch((error) => console.error("Error fetching user:", error));
+      }
+    }, [location]);
+  
   useEffect(() => {
     setAccessToken(localStorage.getItem(ACCESS_TOKEN));
   }, [location]);
@@ -20,14 +32,18 @@ const Header = () => {
       <nav className="container mx-auto flex justify-between">
         <div className="flex-1 flex space-x-2">
           <div className="flex hover:opacity-50 space-x-2 cursor-pointer">
-            <img className="h-6" src="basketball1.png" alt="Logo" />
+            <img className="h-6" src="/basketball1.png" alt="Logo" />
             <span>3X3 Mini</span>
           </div>
         </div>
         <div className="flex justify-between space-x-4">
           <a href="/" className="flex justify-around w-32 hover:opacity-50 cursor-pointer">
+            {request.user.usename}
+            <img className="h-6" src="/trophy.png" alt="Trophy" />
+          </a>
+          <a href="/" className="flex justify-around w-32 hover:opacity-50 cursor-pointer">
             Tournaments
-            <img className="h-6" src="trophy.png" alt="Trophy" />
+            <img className="h-6" src="/trophy.png" alt="Trophy" />
           </a>
           {accessToken ? (
             <Link

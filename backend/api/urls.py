@@ -1,10 +1,10 @@
-from django.contrib import admin
-from django.urls import path, include
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.urls import path
 from . import views
 
 urlpatterns = [    
     path("teams/", views.Teams.as_view(), name="teams"),
+    path("teams/<int:pk>/", views.EditTeam.as_view(), name="teams"),
     path("tournaments/", views.Tournaments.as_view(), name="tournaments"),
     path("tournaments/<int:pk>/participate/", views.Participate.as_view()),
+    path("teams-by-tournament/", views.TeamsByTournamentList.as_view(), name='teams-by-tournament'),
 ]

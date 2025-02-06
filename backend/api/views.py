@@ -1,10 +1,9 @@
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import generics, status
-from rest_framework.response import Response 
-
+from rest_framework import generics
+from rest_framework.exceptions import PermissionDenied
 
 from .models import User, Tournament, Team
-from .serializers import UserSerializer, TournamentSerializer, TeamSerializer
+from .serializers import UserSerializer, TournamentSerializer, TeamCreateSerializer, TeamReadSerializer
 
 
 class CreateUserView(generics.ListCreateAPIView):
@@ -28,18 +27,24 @@ class Tournaments(generics.ListCreateAPIView):
 
 
 class Teams(generics.ListCreateAPIView):
-    serializer_class = TeamSerializer
     permission_classes = [IsAuthenticated]
+    queryset = Team.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return TeamCreateSerializer
+        return TeamReadSerializer
+
+
+class TeamsByTournamentList(generics.ListAPIView):
+    serializer_class = TeamReadSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
-        captain_teams = Team.objects.filter(captain=self.request.user)
-        player_teams = Team.objects.filter(players=self.request.user)
-        
-        return (captain_teams | player_teams).distinct()
-
-    
-    def perform_create(self, serializer):
-        serializer.save(captain=self.request.user)
+        tournament_id = self.request.query_params.get('tournament')
+        if tournament_id:
+            return Team.objects.filter(tournament__id=tournament_id)
+        return Team.objects.none()
 
 
 class Participate(generics.UpdateAPIView):
@@ -54,3 +59,16 @@ class Participate(generics.UpdateAPIView):
         new_teams = self.request.data.get("teams", [])
         merged_teams = list(set(current_teams + new_teams))
         serializer.save(teams=merged_teams)
+
+
+class EditTeam(generics.UpdateAPIView):
+    queryset = Team.objects.all()
+    serializer_class = TeamCreateSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = "pk"
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        if self.request.user not in instance.players.all():
+            raise PermissionDenied("Only team players can edit the team.")
+        serializer.save()

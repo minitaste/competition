@@ -37,18 +37,12 @@ class Team(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name}, {self.tournament}"
+
+    class Meta:
+        ordering = ['-created_at']
                 
-    def clean(self):
-        super().clean()
-
-        if self.players.count() < 3:
-            raise ValidationError("Can`t be less then 3 players.")
-        
-        if self.tournament.teams.count() >= self.tournament.teams_limit:
-            raise ValidationError(f"Tournament {self.tournament.name} already has maximum teams limit!")
-
-
+                
 class Match(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)  
     team_1 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='team1_matches')  
