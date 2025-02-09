@@ -48,13 +48,16 @@ const EditTeam = ({ team, fetchTeams, onClose }) => {
   const editTeam = (e) => {
     e.preventDefault();
     const playersIds = selectedPlayers.map((player) => player.id);
+    const payload = {
+      name: teamName,
+      players: playersIds,
+    };
 
+    if (captain) {
+      payload.captain
+    }
     api
-      .patch(`/api/teams/${team.id}/`, {
-        name: teamName,
-        players: playersIds,
-        captain,
-      })
+      .patch(`/api/teams/${team.id}/`, payload)
       .then((response) => {
         console.log("Team edited successfully.", response.data);
         setTeamName("");

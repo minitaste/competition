@@ -1,10 +1,10 @@
 import React from "react";
-import Tournaments from "../components/AllTournaments";
+import UserProfile from "../components/UserProfile";
 
 const Home = () => {
   return (
     <div>
-      <Tournaments />
+      <UserProfile />
     </div>
   );
 };

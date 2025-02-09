@@ -1,4 +1,4 @@
-from . models import User, Tournament, Team
+from . models import User, Tournament, Team, Match, Statistic
 
 from rest_framework import serializers
 from datetime import date
@@ -31,9 +31,9 @@ class TeamCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = "__all__"
-
+        fields = ["id", "name", "players", "captain", "created_at"]
         
+
 class TeamReadSerializer(serializers.ModelSerializer):
     players = PlayerSerializer(many=True, read_only=True)
     captain = PlayerSerializer(read_only=True)
@@ -55,3 +55,22 @@ class TournamentSerializer(serializers.ModelSerializer):
         if value < date.today():
             raise serializers.ValidationError("End can`t be before start.")
         return value
+    
+
+class MatchSerializer(serializers.ModelSerializer):
+    team_1 = serializers.StringRelatedField()
+    team_1_players = serializers.SerializerMethodField()
+    team_2 = serializers.StringRelatedField()
+    team_2_players  = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Match
+        fields = "__all__"
+
+    def get_team_1_players(self, obj):
+        players = obj.team_1.players.all()
+        return PlayerSerializer(players, many=True).data
+        
+    def get_team_2_players(self, obj):
+        players = obj.team_2.players.all()
+        return PlayerSerializer(players, many=True).data

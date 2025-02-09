@@ -51,12 +51,15 @@ class Match(models.Model):
     team_2_score = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"{self.team_1} vs {self.team_2} - {self.tournament.name}"
+        return f" {self.tournament.name} - {self.team_1} vs {self.team_2}"
 
     def clean(self):
         super().clean()
         if self.team_1 == self.team_2:
             raise ValidationError("A team cannot play against itself.")
+
+        if self.team_1.tournament != self.tournament or self.team_2.tournament != self.tournament:
+            raise ValidationError("Both teams must belong to the same tournament as the match.")
 
     class Meta:
         unique_together = ('tournament', 'team_1', 'team_2')

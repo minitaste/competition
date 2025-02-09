@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import api from "../api";
-import { useParams } from "react-router-dom";
-import Loading from "./Loading";
 import CreateTeam from "./CreateTeam";
-import EditTeam from "./EditTeam";
+import Loading from "./Loading";
 
 const Participate = () => {
   const { tournamentId } = useParams();
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTeamForEdit, setSelectedTeamForEdit] = useState(null);
+
+  useEffect(() => {
+    fetchTeams();
+  }, [tournamentId]);
 
   const fetchTeams = async () => {
     setLoading(true);
@@ -27,19 +29,25 @@ const Participate = () => {
     }
   };
 
-  useEffect(() => {
-    fetchTeams();
-  }, [tournamentId]);
 
   return (
     <div className="py-1 px-4">
-      <button
-        className="ml-auto px-4 pr-3 py-2 mt-4 rounded-2xl flex justify-end text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Create Team
-        <img src="/plus.svg" className="size-7 ml-1" alt="Plus icon" />
-      </button>
+      <div className="flex justify-between">
+        <Link
+          to="schedule"
+          className="px-4 pr-3 py-2 mt-4 rounded-2xl flex justify-end text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
+        >
+          Check Schedule
+          <img src="/schedule.svg" className="size-6 ml-1" alt="Plus icon" />
+        </Link>
+        <button
+          className=" px-4 pr-3 py-2 mt-4 rounded-2xl flex justify-end text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Create Team
+          <img src="/plus.svg" className="size-7 ml-1" alt="Plus icon" />
+        </button>
+      </div>
 
       {isModalOpen && (
         <CreateTeam
@@ -50,7 +58,12 @@ const Participate = () => {
       )}
 
       <div className="text-white">
-        <h2 className="text-center text-3xl">Teams in Tournament</h2>
+        <div className="m-2 flex justify-center text-3xl border border-gray-700 bg-zinc-900/70">
+          <button className="active:bg-zinc-600 h-18 w-34 hover:cursor-pointer  active:border border-indigo-500">Overview</button>
+          <button className="active:bg-zinc-600 h-18 w-34 hover:cursor-pointer  active:border border-indigo-500">Teams</button>
+          <button className="active:bg-zinc-600 h-18 w-34 hover:cursor-pointer  active:border border-indigo-500">Schedule</button>
+        </div>
+        <h2 className="text-center text-2xl">Teams in Tournament</h2>
         {loading ? (
           <Loading />
         ) : (
@@ -81,25 +94,11 @@ const Participate = () => {
                     </p>
                   ))}
                 </div>
-                <button
-                  onClick={() => setSelectedTeamForEdit(team)}
-                  className="mt-2 px-4 py-2 bg-green-600 rounded hover:bg-green-700"
-                >
-                  Edit team
-                </button>
               </li>
             ))}
           </ul>
         )}
       </div>
-
-      {selectedTeamForEdit && (
-        <EditTeam
-          team={selectedTeamForEdit}
-          fetchTeams={fetchTeams}
-          onClose={() => setSelectedTeamForEdit(null)}
-        />
-      )}
     </div>
   );
 };

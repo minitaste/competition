@@ -7,6 +7,10 @@ const CreateTeam = ({ fetchTeams, tournamentId, onClose }) => {
   const [teamName, setTeamName] = useState("");
   const [players, setPlayers] = useState([]);
 
+  useEffect(() => {
+    get_users();
+  }, []);
+
   const createTeam = (e) => {
     e.preventDefault();
     const playersIds = selectedPlayers.map((player) => player.id);
@@ -31,10 +35,6 @@ const CreateTeam = ({ fetchTeams, tournamentId, onClose }) => {
         )
       );
   };
-
-  useEffect(() => {
-    get_users();
-  }, []);
 
   const filteredPlayers = players.filter((player) =>
     player.username.toLowerCase().includes(search.toLowerCase())

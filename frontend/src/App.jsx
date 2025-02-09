@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import NotFound from "./pages/NotFound";
-import Home from "./pages/Home";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Tournaments from "./components/AllTournaments";
 import Header from "./components/Header";
 import Participate from "./components/Participate";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import NotFound from "./pages/NotFound";
+import Register from "./pages/Register";
+import Schedule from "./pages/Schedule";
 
 function Logout() {
   useEffect(() => {
@@ -31,13 +33,15 @@ const App = () => {
           }
         />
         <Route
-          path="/participate/:tournamentId"
+          path="/participate/:tournamentId/schedule"
           element={
             <ProtectedRoute>
-              <Participate />
+              <Schedule />
             </ProtectedRoute>
           }
         />
+        <Route path="/participate/:tournamentId" element={<Participate />}/>
+        <Route path="/tournaments" element={<Tournaments />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/register" element={<Register />} />
