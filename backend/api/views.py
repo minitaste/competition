@@ -4,7 +4,7 @@ from rest_framework.exceptions import PermissionDenied
 from django.db.models import Q
 
 from .models import User, Tournament, Team, Match, Statistic
-from .serializers import UserSerializer, TournamentSerializer, TeamCreateSerializer, TeamReadSerializer, MatchSerializer
+from .serializers import UserSerializer, TournamentSerializer, TeamCreateSerializer, TeamReadSerializer, MatchReadSerializer, MatchWriteSerializer
 
 
 class CreateUserView(generics.ListCreateAPIView):
@@ -75,8 +75,8 @@ class UserTeams(generics.ListAPIView):
         return Team.objects.filter(players=user).distinct()
 
 
+
 class Schedule(generics.ListCreateAPIView):
-    serializer_class = MatchSerializer
     permission_classes = [AllowAny]
 
     def get_queryset(self):
@@ -85,8 +85,13 @@ class Schedule(generics.ListCreateAPIView):
             return Match.objects.filter(tournament__id=tournament_id)
         return Match.objects.all()
 
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return MatchWriteSerializer
+        return MatchReadSerializer
+
     def get_permissions(self):
-        if self.request.method == "POST": 
+        if self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
 

@@ -57,11 +57,33 @@ class TournamentSerializer(serializers.ModelSerializer):
         return value
     
 
-class MatchSerializer(serializers.ModelSerializer):
+class MatchWriteSerializer(serializers.ModelSerializer):
+    # Використовуємо PrimaryKeyRelatedField, щоб дозволити передавати ID
+    tournament = serializers.PrimaryKeyRelatedField(queryset=Tournament.objects.all())
+    team_1 = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
+    team_2 = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
+
+    class Meta:
+        model = Match
+        fields = "__all__"
+
+    def validate(self, data):
+        team_1 = data.get("team_1")
+        team_2 = data.get("team_2")
+        tournament = data.get("tournament")
+        if team_1 == team_2:
+            raise serializers.ValidationError("A team cannot play against itself.")
+        if team_1.tournament != tournament or team_2.tournament != tournament:
+            raise serializers.ValidationError("Both teams must belong to the same tournament as the match.")
+        return data
+
+class MatchReadSerializer(serializers.ModelSerializer):
+    # Тут ви можете використовувати StringRelatedField або вкладені серіалізатори
+    tournament = serializers.StringRelatedField()
     team_1 = serializers.StringRelatedField()
-    team_1_players = serializers.SerializerMethodField()
     team_2 = serializers.StringRelatedField()
-    team_2_players  = serializers.SerializerMethodField()
+    team_1_players = serializers.SerializerMethodField()
+    team_2_players = serializers.SerializerMethodField()
 
     class Meta:
         model = Match
@@ -70,7 +92,7 @@ class MatchSerializer(serializers.ModelSerializer):
     def get_team_1_players(self, obj):
         players = obj.team_1.players.all()
         return PlayerSerializer(players, many=True).data
-        
+
     def get_team_2_players(self, obj):
         players = obj.team_2.players.all()
         return PlayerSerializer(players, many=True).data
