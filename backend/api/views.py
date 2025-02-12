@@ -1,10 +1,18 @@
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
-from django.db.models import Q
 
-from .models import User, Tournament, Team, Match, Statistic
-from .serializers import UserSerializer, TournamentSerializer, TeamCreateSerializer, TeamReadSerializer, MatchReadSerializer, MatchWriteSerializer
+from .models import User, Tournament, Team, Match
+from .models import Statistic
+from .serializers import (
+    UserSerializer,
+    TournamentSerializer,
+    TeamCreateSerializer,
+    TeamReadSerializer,
+    MatchReadSerializer,
+    MatchWriteSerializer,
+    StatisticSerializer,
+)
 
 
 class CreateUserView(generics.ListCreateAPIView):
@@ -14,15 +22,20 @@ class CreateUserView(generics.ListCreateAPIView):
 
 
 class Tournaments(generics.ListCreateAPIView):
-    queryset = Tournament.objects.all()
     serializer_class = TournamentSerializer
     permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        tournament_id = self.request.query_params.get("tournament")
+        if tournament_id:
+            return Tournament.objects.filter(id=tournament_id)
+        return Tournament.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(organizer=self.request.user)
 
     def get_permissions(self):
-        if self.request.method == "POST": 
+        if self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
 
@@ -37,7 +50,7 @@ class Teams(generics.ListCreateAPIView):
         return TeamReadSerializer
 
     def get_permissions(self):
-        if self.request.method == "POST": 
+        if self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
 
@@ -47,7 +60,7 @@ class TeamsByTournamentList(generics.ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        tournament_id = self.request.query_params.get('tournament')
+        tournament_id = self.request.query_params.get("tournament")
         if tournament_id:
             return Team.objects.filter(tournament__id=tournament_id)
         return Team.objects.none()
@@ -75,12 +88,11 @@ class UserTeams(generics.ListAPIView):
         return Team.objects.filter(players=user).distinct()
 
 
-
 class Schedule(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        tournament_id = self.request.query_params.get('tournament')
+        tournament_id = self.request.query_params.get("tournament")
         if tournament_id:
             return Match.objects.filter(tournament__id=tournament_id)
         return Match.objects.all()
@@ -96,3 +108,20 @@ class Schedule(generics.ListCreateAPIView):
         return [AllowAny()]
 
 
+class StatisticView(generics.ListCreateAPIView):
+    serializer_class = StatisticSerializer
+    permission_classes = [AllowAny]
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAuthenticated()]
+        return [AllowAny()]
+
+    def get_queryset(self):
+        match_id = self.request.query_params.get("match")
+        player_ids = self.request.query_params.get("player")
+
+        if match_id and player_ids:
+            player_ids = player_ids.split(',')
+            return Statistic.objects.filter(match__id=match_id, player__id__in=player_ids)
+        return Statistic.objects.none()

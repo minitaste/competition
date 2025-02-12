@@ -49,6 +49,9 @@ class Match(models.Model):
     team_1_score = models.PositiveIntegerField(default=0)
     team_2 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='team2_matches')  
     team_2_score = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    
 
     def __str__(self):
         return f" {self.tournament.name} - {self.team_1} vs {self.team_2}"
@@ -63,6 +66,7 @@ class Match(models.Model):
 
     class Meta:
         unique_together = ('tournament', 'team_1', 'team_2')
+        ordering = ['-created_at']
 
 
 class Statistic(models.Model):

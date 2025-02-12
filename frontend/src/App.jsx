@@ -8,8 +8,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
-import Schedule from "./pages/Schedule";
-
+  
 function Logout() {
   useEffect(() => {
     localStorage.clear();
@@ -29,14 +28,6 @@ const App = () => {
             <ProtectedRoute>
               <Home />
 
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/participate/:tournamentId/schedule"
-          element={
-            <ProtectedRoute>
-              <Schedule />
             </ProtectedRoute>
           }
         />

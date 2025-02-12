@@ -11,9 +11,22 @@ const CreateTeam = ({ fetchTeams, tournamentId, onClose }) => {
     get_users();
   }, []);
 
+  const get_users = () => {
+    api
+      .get("/api/user/register/")
+      .then((response) => response.data)
+      .then((data) => {
+        setPlayers(data);
+        console.log(data);
+      })
+      .catch((error) => console.error(error));
+  };
+
   const createTeam = (e) => {
     e.preventDefault();
     const playersIds = selectedPlayers.map((player) => player.id);
+    console.log(playersIds)
+    console.log(tournamentId)
 
     api
       .post(`/api/teams/`, {
@@ -40,16 +53,6 @@ const CreateTeam = ({ fetchTeams, tournamentId, onClose }) => {
     player.username.toLowerCase().includes(search.toLowerCase())
   );
 
-  const get_users = () => {
-    api
-      .get("/api/user/register/")
-      .then((response) => response.data)
-      .then((data) => {
-        setPlayers(data);
-        console.log(data);
-      })
-      .catch((error) => console.error(error));
-  };
 
   const handleSelectPlayer = (player) => {
     if (!selectedPlayers.includes(player)) {
