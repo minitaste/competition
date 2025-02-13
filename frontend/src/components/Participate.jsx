@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ScheduleMatches from "./ScheduleMatches";
 import Overview from "./Overview";
 import Teams from "./Teams";
+import FinishTournament from "./FinishTournament";
 
 const Participate = () => {
   
@@ -9,6 +10,7 @@ const Participate = () => {
 
   return (
     <div className="py-1 px-4">
+      <FinishTournament />
       <div className="text-white">
         <h1></h1>
         <div className="m-2 flex justify-center text-3xl border border-gray-700 bg-zinc-900/70">

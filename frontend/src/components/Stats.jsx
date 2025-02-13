@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import Loading from "./Loading";
-import EditStats from "./EditStats";
+import EditTableRow from "./EditTableRow";
 
-const Stats = ({ matchId, team1PlayerIds, team2PlayerIds }) => {
+const Stats = ({ matchId, team1PlayerIds, team2PlayerIds, onSaveSuccess }) => {
   const [team1Stats, setTeam1Stats] = useState([]);
   const [team2Stats, setTeam2Stats] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [statsUpdate, setStatsUpdate] = useState(false);
+
+  useEffect(() => {
+    if (statsUpdate) {
+      handleCheckStats();
+      setStatsUpdate(false);
+    }
+  }, [statsUpdate]);
 
   const getStats = async (playerIds = []) => {
     try {
@@ -34,14 +42,13 @@ const Stats = ({ matchId, team1PlayerIds, team2PlayerIds }) => {
     setLoading(false);
   };
 
+  const handleCancelStats = () => {
+    setTeam1Stats([]);
+    setTeam2Stats([]);
+  };
+
   return (
     <div className="p-2">
-      <EditStats
-        handleCheckStats={handleCheckStats}
-        team1Stats={team1Stats}
-        team2Stats={team2Stats}
-      />
-
       <button
         onClick={handleCheckStats}
         className="flex p-2 rounded-2xl text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
@@ -68,15 +75,13 @@ const Stats = ({ matchId, team1PlayerIds, team2PlayerIds }) => {
                 </tr>
               </thead>
               <tbody>
-                {team1Stats.map((player) => (
-                  <tr key={player.id} className="bg-zinc-900 text-white">
-                    <td className="pl-2 border">{player.player.username}</td>
-                    <td className="text-center border">{player.points}</td>
-                    <td className="text-center border ">{player.assists}</td>
-                    <td className="text-center border ">{player.rebounds}</td>
-                    <td className="text-center border ">{player.steals}</td>
-                    <td className="text-center border ">{player.blocks}</td>
-                  </tr>
+                {team1Stats.map((stats) => (
+                  <EditTableRow
+                    key={stats.id}
+                    stats={stats}
+                    onUpdate={onSaveSuccess}
+                    setStatsUpdate={setStatsUpdate}
+                  />
                 ))}
               </tbody>
             </table>
@@ -96,22 +101,22 @@ const Stats = ({ matchId, team1PlayerIds, team2PlayerIds }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {team2Stats.map((player) => (
-                    <tr key={player.id} className="bg-zinc-900 text-white">
-                      <td className="pl-2 border">{player.player.username}</td>
-                      <td className="text-center border">{player.points}</td>
-                      <td className="text-center border ">{player.assists}</td>
-                      <td className="text-center border ">{player.rebounds}</td>
-                      <td className="text-center border ">{player.steals}</td>
-                      <td className="text-center border ">{player.blocks}</td>
-                    </tr>
+                  {team2Stats.map((stats) => (
+                    <EditTableRow
+                      key={stats.id}
+                      stats={stats}
+                      onUpdate={onSaveSuccess}
+                    />
                   ))}
                 </tbody>
               </table>
             </div>
           </div>
-          <button className="mt-2 flex px-4 p-2 rounded-2xl text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100">
-            Edit stats <img src="/edit.svg" className="ml-1 size-8" />
+          <button
+            onClick={handleCancelStats}
+            className="mt-4 px-4 py-2 bg-red-600 rounded hover:bg-red-700"
+          >
+            Close
           </button>
         </div>
       ) : (

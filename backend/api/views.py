@@ -38,6 +38,16 @@ class Tournaments(generics.ListCreateAPIView):
         if self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
+        
+        
+class FinishTournament(generics.UpdateAPIView):
+    queryset = Tournament.objects.all()
+    serializer_class = TournamentSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = "pk"
+
+    def perform_update(self, serializer):
+        serializer.save(is_over=True)
 
 
 class Teams(generics.ListCreateAPIView):
@@ -125,3 +135,13 @@ class StatisticView(generics.ListCreateAPIView):
             player_ids = player_ids.split(',')
             return Statistic.objects.filter(match__id=match_id, player__id__in=player_ids)
         return Statistic.objects.none()
+
+
+class StatisticUpdateView(generics.UpdateAPIView):
+    queryset = Statistic.objects.all()
+    serializer_class = StatisticSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = "pk"
+
+    def perform_update(self, serializer):
+        serializer.save()
