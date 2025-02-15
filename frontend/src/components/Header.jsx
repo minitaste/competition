@@ -1,21 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ACCESS_TOKEN } from "../constants";
+import { AuthContext } from "../AuthContext";
 
 const Header = () => {
   const [accessToken, setAccessToken] = useState(null);
   const location = useLocation();
-
   
   useEffect(() => {
     setAccessToken(localStorage.getItem(ACCESS_TOKEN));
   }, [location]);
 
-  const handleLogout = () => {
-    localStorage.removeItem(ACCESS_TOKEN);
-    setAccessToken(null);
-  };
+function handleLogout() {
+  const { setUser } = useContext(AuthContext);
 
+  useEffect(() => {
+    localStorage.clear();
+    setUser(null);
+  }, [setUser]);
+
+  return <Navigate to="/login/" />;
+}
   return (
     <header className="h-14 fixed top-0 left-0 w-full text-white bg-black/30 px-6 py-4 z-10 border-b-2 border-zinc-900 ">
       <nav className="container mx-auto flex justify-between">

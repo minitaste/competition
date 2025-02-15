@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import api from "../api";
+import { AuthContext } from "../AuthContext";
 
 const EditTableRow = ({ stats, onUpdate, setStatsUpdate }) => {
+    const {user} = useContext(AuthContext)
+    
   const [points, setPoints] = useState(stats.points);
   const [assists, setAssists] = useState(stats.assists);
   const [rebounds, setRebounds] = useState(stats.rebounds);
@@ -113,7 +116,9 @@ const EditTableRow = ({ stats, onUpdate, setStatsUpdate }) => {
           stats.blocks
         )}
       </td>
-      <td className="p-2 border text-center">
+          {user && (
+              
+          <td className="p-2 border text-center">
         {editing ? (
           <>
             <button
@@ -140,6 +145,7 @@ const EditTableRow = ({ stats, onUpdate, setStatsUpdate }) => {
           </button>
         )}
       </td>
+      )}
     </tr>
   );
 };

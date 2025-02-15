@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import api from "../api";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import Loading from "./Loading";
+import { AuthContext } from "../AuthContext";
 
 function Form({ route, method }) {
+  const { setUser } = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
   const isLogin = method === "login";
@@ -26,18 +31,23 @@ function Form({ route, method }) {
       if (method === "login") {
         localStorage.setItem(ACCESS_TOKEN, response.data.access);
         localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
+
+        setUser({token: response.data.access})
+        
         navigate("/");
       } else {
-        const loginResponse = await api.post("/api/token/", {
-          username,
-          password,
-        });
+        const loginResponse = await api.post("/api/token/", payload);
         localStorage.setItem(ACCESS_TOKEN, loginResponse.data.access);
         localStorage.setItem(REFRESH_TOKEN, loginResponse.data.refresh);
+
+        setUser({ token: loginResponse.data.access });
+
+        
         navigate("/");
       }
     } catch (error) {
       console.error(error);
+      setError("Invalid username/password.")
     } finally {
       setLoading(false);
     }
@@ -52,6 +62,7 @@ function Form({ route, method }) {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <p className="text-red-500 text-center mb-2">{error}</p>
         <form onSubmit={handleSubmit} className="">
           <div>
             <label htmlFor="username" className="block text-sm/6 font-medium ">
@@ -109,7 +120,7 @@ function Form({ route, method }) {
             </div>
           </div>
           {loading && <Loading />}
-          <div className="mt-4">
+          <div className="mt-3 ml-1">
             <button
               type="submit"
               className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
@@ -117,6 +128,21 @@ function Form({ route, method }) {
               {name}
             </button>
           </div>
+          {isLogin ? (
+            <div className="mt-2">
+              Don`t have a profile,{" "}
+              <Link to="/register" className="underline hover:opacity-70">
+                Sign Up
+              </Link>
+            </div>
+          ) : (
+            <div>
+              Have profile?{" "}
+              <Link to="/login" className="underline hover:opacity-70">
+                Log In
+              </Link>
+            </div>
+          )}
         </form>
       </div>
     </div>

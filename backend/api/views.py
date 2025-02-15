@@ -1,5 +1,6 @@
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import generics
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.exceptions import PermissionDenied
 
 from .models import User, Tournament, Team, Match
@@ -14,6 +15,14 @@ from .serializers import (
     StatisticSerializer,
 )
 
+
+class CurrentUserView(RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+    
 
 class CreateUserView(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -47,7 +56,15 @@ class FinishTournament(generics.UpdateAPIView):
     lookup_field = "pk"
 
     def perform_update(self, serializer):
+        tournament = self.get_object()
+        
+        if tournament.is_over:
+            raise PermissionDenied("This tournament is already finished.")
+            
+        if tournament.organizer != self.request.user:
+            raise PermissionDenied("Only the tournament organizer can finish tournament.")
         serializer.save(is_over=True)
+
 
 
 class Teams(generics.ListCreateAPIView):
@@ -116,6 +133,12 @@ class Schedule(generics.ListCreateAPIView):
         if self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
+
+    def perform_create(self, serializer):
+        tournament = serializer.validated_data.get("tournament")
+        if tournament.organizer != self.request.user:
+            raise PermissionDenied("Only the tournament organizer can add matches.")
+        serializer.save()
 
 
 class StatisticView(generics.ListCreateAPIView):

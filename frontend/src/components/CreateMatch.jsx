@@ -13,6 +13,8 @@ const CreateMatch = ({ tournamentId, onClose }) => {
   const [team1Score, setTeam1Score] = useState(null);
   const [team2Score, setTeam2Score] = useState(null);
 
+  const [error, setError] = useState("");
+  
   useEffect(() => {
     fetchTeams();
   }, []);
@@ -55,11 +57,14 @@ const CreateMatch = ({ tournamentId, onClose }) => {
         setTeam2Score("");
         onClose();
       })
-      .catch((error) =>
+      .catch((error) => {
+        setError(error.response.data.detail || "Something went wrong");
+
         console.error(
           "Error adding Match:",
           error.response ? error.response.data : error.message
         )
+      }
       );
   };
 
@@ -118,6 +123,7 @@ const CreateMatch = ({ tournamentId, onClose }) => {
           )}
           <label>Team 1 points:</label>
           <input
+            className="mt-2 block w-full rounded-md  px-3 py-1.5 text-base  outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             type="number"
             value={team1Score}
             onChange={(e) => setTeam1Score(e.target.value)}
@@ -125,7 +131,7 @@ const CreateMatch = ({ tournamentId, onClose }) => {
           />
           <label>Team 2:</label>
           <input
-            className="mt-2 block w-full rounded-md  px-3 py-1.5 text-base  outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            className="block w-full rounded-md px-3 py-1.5 text-base  outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             type="search"
             value={search2}
             onChange={(e) => setSearch2(e.target.value)}
@@ -151,13 +157,14 @@ const CreateMatch = ({ tournamentId, onClose }) => {
           )}
           <label>Team 2 points:</label>
           <input
+            className="block w-full rounded-md px-3 py-1.5 text-base  outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             type="number"
             value={team2Score}
             onChange={(e) => setTeam2Score(e.target.value)}
             placeholder="PTS team scored.."
           />
 
-          <div className=""></div>
+          <p className="text-red-500 text-center mb-2">{error}</p>
 
           <input type="submit" value="Submit" />
         </form>

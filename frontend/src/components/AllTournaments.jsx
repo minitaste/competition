@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import api from "../api";
 import Loading from "./Loading";
 import { Link } from "react-router-dom";
 import CreateTournament from "./CreateTournament";
+import { AuthContext } from "../AuthContext";
 
 const Tournaments = () => {
+  const { user } = useContext(AuthContext);
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -27,21 +28,23 @@ const Tournaments = () => {
       setLoading(false);
     }
   };
+
   const handleSuccess = () => {
-    setSuccess(true);
     getTournaments();
     setIsModalOpen(false);
   };
 
   return (
     <div className="flex flex-col px-6 space-y-3 lg:px-8 text-white">
-      <button
-        className="ml-auto px-4 pr-3 py-2 mt-4 rounded-2xl flex justify-end text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Create Tournament
-        <img src="plus.svg" className="size-7 ml-1" />
-      </button>
+      {user && (
+        <button
+          className="ml-auto px-4 pr-3 py-2 mt-4 rounded-2xl flex justify-end text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Create Tournament
+          <img src="plus.svg" className="size-7 ml-1" />
+        </button>
+      )}
 
       {isModalOpen && (
         <CreateTournament
@@ -68,10 +71,7 @@ const Tournaments = () => {
             </div>
             <p>Location: {tournament.location}</p>
 
-            <Link
-              to={`/participate/${tournament.id}`}
-              state={{ tournament }}
-            >
+            <Link to={`/participate/${tournament.id}`} state={{ tournament }}>
               <div className="text-center mt-3 inline-block bg-black px-4 py-1 cursor-pointer rounded-lg text-white hover:text-gray-400 hover:drop-shadow-2xl transition-all duration-200 ease-in-out">
                 <span className="text-2xl staatliches">Play</span>
               </div>

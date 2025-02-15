@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import api from "../api";
 import { useParams } from "react-router-dom";
 import CreateMatch from "./CreateMatch";
 import Stats from "./Stats";
+import { AuthContext } from "../AuthContext";
 
 const ScheduleMatches = () => {
+  const {user} = useContext(AuthContext)
+  
   const { tournamentId } = useParams();
+  
   const [matches, setMatches] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -27,13 +31,15 @@ const ScheduleMatches = () => {
 
   return (
     <div className="p-1 px-4 space-y-2">
-      <button
-        className="px-4 pr-3 py-2 mt-2 rounded-2xl flex justify-end text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Add Match
-        <img src="/plus.svg" className="size-7 ml-1" alt="Plus icon" />
-      </button>
+      {user && (
+        <button
+          className="px-4 pr-3 py-2 mt-2 rounded-2xl flex justify-end text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Add Match
+          <img src="/plus.svg" className="size-7 ml-1" alt="Plus icon" />
+        </button>
+      )}
 
       {isModalOpen && (
         <CreateMatch

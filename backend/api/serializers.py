@@ -42,6 +42,7 @@ class TeamReadSerializer(serializers.ModelSerializer):
 
 class TournamentSerializer(serializers.ModelSerializer):
     teams = TeamReadSerializer(many=True, read_only=True)
+    organizer = serializers.StringRelatedField()
 
     class Meta:
         model = Tournament

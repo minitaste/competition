@@ -1,16 +1,22 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import ScheduleMatches from "./ScheduleMatches";
 import Overview from "./Overview";
 import Teams from "./Teams";
 import FinishTournament from "./FinishTournament";
+import { AuthContext } from "../AuthContext";
 
 const Participate = () => {
+  const {user} = useContext(AuthContext);
   
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
     <div className="py-1 px-4">
-      <FinishTournament />
+      {user && (
+        <div className="text-right">
+          <FinishTournament />
+        </div>
+      )}
       <div className="text-white">
         <h1></h1>
         <div className="m-2 flex justify-center text-3xl border border-gray-700 bg-zinc-900/70">

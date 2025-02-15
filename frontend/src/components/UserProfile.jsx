@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import api from "../api";
 import EditTeam from "./EditTeam";
-
+import { AuthContext } from "../AuthContext";
 
 const UserProfile = () => {
+  const { user } = useContext(AuthContext);
+
   const [teams, setTeams] = useState([]);
   const [selectedTeamForEdit, setSelectedTeamForEdit] = useState(null);
 
@@ -13,7 +15,7 @@ const UserProfile = () => {
 
   const getTeams = async () => {
     try {
-      const response = await api.get(`/api/user/profile/teams/`); 
+      const response = await api.get(`/api/user/profile/teams/`);
       setTeams(response.data);
       console.log(response.data);
     } catch (error) {
@@ -23,6 +25,10 @@ const UserProfile = () => {
 
   return (
     <div className="px-4 py-2">
+      <p className="text-white text-right text-xl">
+        Profile username: <span className="font-bold underline">{user.username}</span>
+      </p>
+
       <h1 className="text-center text-white text-xl">Your teams:</h1>
       <div className="space-y-4 text-white">
         {teams.map((team) => (

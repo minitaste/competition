@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api";
 import Loading from "./Loading";
 import CreateTeam from "./CreateTeam";
-
+import { AuthContext } from "../AuthContext";
 
 const Teams = () => {
+  const { user } = useContext(AuthContext);
+
   const { tournamentId } = useParams();
 
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
 
   useEffect(() => {
     fetchTeams();
@@ -34,15 +35,17 @@ const Teams = () => {
 
   return (
     <div>
-      <div className="flex justify-between">
-        <button
-          className=" px-4 pr-3 py-2 mt-4 rounded-2xl flex justify-end text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
-          onClick={() => setIsModalOpen(true)}
-        >
-          Create Team
-          <img src="/plus.svg" className="size-7 ml-1" alt="Plus icon" />
-        </button>
-      </div>
+      {user && (
+        <div className="flex justify-between">
+          <button
+            className=" px-4 pr-3 py-2 mt-4 rounded-2xl flex justify-end text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
+            onClick={() => setIsModalOpen(true)}
+          >
+            Create Team
+            <img src="/plus.svg" className="size-7 ml-1" alt="Plus icon" />
+          </button>
+        </div>
+      )}
 
       {isModalOpen && (
         <CreateTeam
