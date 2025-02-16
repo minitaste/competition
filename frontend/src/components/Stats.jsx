@@ -8,6 +8,7 @@ const Stats = ({ matchId, team1PlayerIds, team2PlayerIds, onSaveSuccess }) => {
   const [team2Stats, setTeam2Stats] = useState([]);
   const [loading, setLoading] = useState(false);
   const [statsUpdate, setStatsUpdate] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (statsUpdate) {
@@ -18,12 +19,16 @@ const Stats = ({ matchId, team1PlayerIds, team2PlayerIds, onSaveSuccess }) => {
 
   const getStats = async (playerIds = []) => {
     try {
-      console.log(playerIds);
       const playerQuery = playerIds.join(",");
       const response = await api.get(
         `/api/tournaments/participate/statistic/?match=${matchId}&player=${playerQuery}`
       );
       console.log(response.data);
+      if (response.data.length === 0) {
+        setError("Stats hasn't updated yet.");
+        console.log("No stats found");
+      }
+
       return response.data;
     } catch (error) {
       console.error("Error with fetching stats...", error);
@@ -120,7 +125,7 @@ const Stats = ({ matchId, team1PlayerIds, team2PlayerIds, onSaveSuccess }) => {
           </button>
         </div>
       ) : (
-        <p>Press the button to update stats</p>
+        <p>{error}</p>
       )}
     </div>
   );

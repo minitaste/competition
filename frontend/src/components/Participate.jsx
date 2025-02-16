@@ -18,7 +18,6 @@ const Participate = () => {
         </div>
       )}
       <div className="text-white">
-        <h1></h1>
         <div className="m-2 flex justify-center text-3xl border border-gray-700 bg-zinc-900/70">
           <button
             onClick={() => setActiveTab("overview")}

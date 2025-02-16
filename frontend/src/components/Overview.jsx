@@ -8,7 +8,7 @@ const Overview = () => {
 
   const [tournament, setTournament] = useState(null);
   const [isOver, setIsOver] = useState(false);
-  
+
   useEffect(() => {
     getTournament();
   }, []);
@@ -19,14 +19,14 @@ const Overview = () => {
         `/api/tournaments/?tournament=${tournamentId}`
       );
       setTournament(response.data[0]);
-      setIsOver(response.data[0].is_over)
+      setIsOver(response.data[0].is_over);
       console.log(response.data[0]);
-      console.log(isOver)
+      console.log(isOver);
     } catch (error) {
       console.error("Error fetching tournament:", error);
     }
   };
-  
+
   return (
     <div className="text-white">
       {tournament ? (
@@ -42,13 +42,12 @@ const Overview = () => {
             </p>
             <p>Start date: {tournament.start}</p>
             <p>Organizer: {tournament.organizer}</p>
-
+            <p>Finished: {isOver ? <>Yes</> : <>No</>}</p>
           </div>
         </>
       ) : (
         <Loading />
       )}
-      
     </div>
   );
 };

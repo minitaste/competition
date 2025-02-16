@@ -61,6 +61,9 @@ class Match(models.Model):
         if self.team_1 == self.team_2:
             raise ValidationError("A team cannot play against itself.")
 
+        if self.team_1_score > 22 or self.team_2_score > 22:
+            raise ValidationError("Enter correct score.")
+
         if self.team_1.tournament != self.tournament or self.team_2.tournament != self.tournament:
             raise ValidationError("Both teams must belong to the same tournament as the match.")
 

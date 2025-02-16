@@ -70,6 +70,8 @@ class MatchWriteSerializer(serializers.ModelSerializer):
     def validate(self, data):
         team_1 = data.get("team_1")
         team_2 = data.get("team_2")
+        team_1_score = data.get("team_1_score")
+        team_2_score = data.get("team_2_score")
         tournament = data.get("tournament")
         if team_1 == team_2:
             raise serializers.ValidationError("A team cannot play against itself.")
@@ -77,6 +79,8 @@ class MatchWriteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Both teams must belong to the same tournament as the match."
             )
+        if team_1_score > 22 or team_2_score > 22:
+            raise serializers.ValidationError("Enter correct score.")
         return data
 
 

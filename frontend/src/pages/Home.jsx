@@ -1,10 +1,10 @@
 import React from "react";
-import UserProfile from "../components/UserProfile";
+import News from "../components/News";
 
 const Home = () => {
   return (
     <div>
-      <UserProfile />
+      <News/>
     </div>
   );
 };

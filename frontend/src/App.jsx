@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
 import { AuthContext, AuthProvider } from "./AuthContext";
+import Profile from "./pages/Profile";
 
 function Logout() {
   const { setUser } = useContext(AuthContext);
@@ -18,7 +19,7 @@ function Logout() {
     setUser(null);
   }, [setUser]);
 
-  return <Navigate to="/login/" />;
+  return <Navigate to="/" />;
 }
 
 const App = () => {
@@ -28,13 +29,14 @@ const App = () => {
         <Header />
         <Routes>
           <Route
-            path="/"
+            path="/profile"
             element={
               <ProtectedRoute>
-                <Home />
+                <Profile />
               </ProtectedRoute>
             }
           />
+          <Route path="/" element={<Home />} />
           <Route path="/participate/:tournamentId" element={<Participate />} />
           <Route path="/tournaments" element={<Tournaments />} />
           <Route path="/login" element={<Login />} />

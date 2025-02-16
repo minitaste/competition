@@ -58,7 +58,11 @@ const CreateMatch = ({ tournamentId, onClose }) => {
         onClose();
       })
       .catch((error) => {
-        setError(error.response.data.detail || "Something went wrong");
+        setError(
+          error.response.data.detail ||
+            error.response.data.non_field_errors ||
+            "Something went wrong"
+        );
 
         console.error(
           "Error adding Match:",
