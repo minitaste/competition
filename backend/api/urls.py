@@ -5,7 +5,7 @@ urlpatterns = [
     path("", include("news.urls")),
     path("user/me/", views.CurrentUserView.as_view(), name="user"),
     path("teams/", views.Teams.as_view(), name="teams"),
-    path("teams/<int:pk>/", views.EditTeam.as_view(), name="teams"),
+    path("teams/<int:pk>/", views.EditTeam.as_view(), name="edit-teams"),
     path("tournaments/", views.Tournaments.as_view(), name="tournaments"),
     path("tournaments/finish/<int:pk>/", views.FinishTournament.as_view(), name="finish-tournaments"),
     path("tournaments/participate/schedule/", views.Schedule.as_view()),
