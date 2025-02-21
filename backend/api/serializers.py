@@ -105,8 +105,42 @@ class MatchReadSerializer(serializers.ModelSerializer):
 
 
 class StatisticSerializer(serializers.ModelSerializer):
-    player = PlayerSerializer(many=False, read_only=True)
-
+    player = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    
     class Meta:
         model = Statistic
         fields = "__all__"
+
+    def validate(self, data):
+        instance = getattr(self, 'instance', None)
+        player = data.get('player', instance.player if instance else None)
+        match = data.get('match', instance.match if instance else None)
+        
+        if not instance and (not player or not match):
+            raise serializers.ValidationError(
+                "Both player and match are required"
+            )
+            
+        if instance and not (player and match):
+            return data
+            
+        is_team_player = (
+            match.team_1.players.filter(id=player.id).exists() or 
+            match.team_2.players.filter(id=player.id).exists()
+        )
+        
+        if not is_team_player:
+            raise serializers.ValidationError(
+                "Player must belong to one of the teams in the match"
+            )
+            
+        existing_stat = Statistic.objects.filter(player=player, match=match)
+        if instance:
+            existing_stat = existing_stat.exclude(id=instance.id)
+            
+        if existing_stat.exists():
+            raise serializers.ValidationError(
+                "Statistics for this player in this match already exists"
+            )
+            
+        return data

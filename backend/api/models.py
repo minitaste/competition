@@ -68,7 +68,6 @@ class Match(models.Model):
             raise ValidationError("Both teams must belong to the same tournament as the match.")
 
     class Meta:
-        unique_together = ('tournament', 'team_1', 'team_2')
         ordering = ['-created_at']
 
 

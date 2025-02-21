@@ -122,7 +122,7 @@ class Schedule(generics.ListCreateAPIView):
         tournament_id = self.request.query_params.get("tournament")
         if tournament_id:
             return Match.objects.filter(tournament__id=tournament_id)
-        return Match.objects.all()
+        return Match.objects.none()
 
     def get_serializer_class(self):
         if self.request.method == "POST":
