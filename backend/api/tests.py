@@ -124,19 +124,25 @@ class TeamTest(BaseTestCase):
     def test_create_team_tournament_full(self):
         """Should reject team creation when tournament is full"""
         # Create maximum allowed teams
-        for i in range(self.tournament.teams_limit):
+        for i in range(self.tournament.teams_limit + 1):
             Team.objects.create(name=f"Team {i}", tournament=self.tournament)
 
         response = self.client.post("/api/teams/", self.valid_team_data)
-
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("tournament", response.data)
 
-    # def test_patch_teams(self):
-    #     response = self.client.patch(
-    #         f"/api/teams/{self.team.id}/", {"name": "Not test team"}
-    #     )
-    #     self.assertEqual(response.status_code, 200)
+    def test_create_team_more_four_players(self):
+        player_ids = []
+        for i in range(5):
+            new_user = User.objects.create_user(username=f"username{i}", password=f"password{i}")
+            player_ids.append(new_user.id)
+        invalid_team_data = self.valid_team_data.copy()
+        invalid_team_data["players"] = player_ids
+
+        response = self.client.post("/api/teams/", invalid_team_data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Can`t be more than 4 players.", str(response.data))
 
 
 class MatchTest(BaseTestCase):
@@ -218,29 +224,27 @@ class StatisticTest(BaseTestCase):
             start=self.valid_future_date,
             teams_limit=16,
             location="Test Location",
-            organizer=self.user
+            organizer=self.user,
         )
-        
+
         self.other_user = User.objects.create_user(
-            username="other_user",
-            password="testpass123",
-            email="other@example.com"
+            username="other_user", password="testpass123", email="other@example.com"
         )
-        
+
         self.team1 = Team.objects.create(name="Team 1", tournament=self.tournament)
         self.team1.players.add(self.user)
-        
+
         self.team2 = Team.objects.create(name="Team 2", tournament=self.tournament)
         self.team2.players.add(self.other_user)
-        
+
         self.match = Match.objects.create(
             tournament=self.tournament,
             team_1=self.team1,
             team_1_score=2,
             team_2=self.team2,
-            team_2_score=1
+            team_2_score=1,
         )
-        
+
         self.valid_statistic_data = {
             "player": self.user.id,
             "match": self.match.id,
@@ -248,35 +252,32 @@ class StatisticTest(BaseTestCase):
             "assists": 2,
             "rebounds": 3,
             "steals": 2,
-            "blocks": 1
+            "blocks": 1,
         }
 
     def test_create_statistic_success(self):
         """Should successfully create statistics for a player"""
         response = self.client.post(
-            "/api/tournaments/participate/statistic/",
-            self.valid_statistic_data
+            "/api/tournaments/participate/statistic/", self.valid_statistic_data
         )
-        
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["points"], self.valid_statistic_data["points"])
         self.assertEqual(response.data["player"], self.valid_statistic_data["player"])
-        
-    def test_update_statistics(self):        
+
+    def test_update_statistics(self):
         """Should update existing statistics"""
         # Create initial statistics
         response = self.client.post(
-            "/api/tournaments/participate/statistic/",
-            self.valid_statistic_data
+            "/api/tournaments/participate/statistic/", self.valid_statistic_data
         )
         statistic_id = response.data["id"]
-        
+
         # Update statistics
         update_data = {"points": 15}
         response = self.client.patch(
-            f"/api/tournaments/participate/statistic/{statistic_id}/",
-            update_data
+            f"/api/tournaments/participate/statistic/{statistic_id}/", update_data
         )
-        
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["points"], 15)

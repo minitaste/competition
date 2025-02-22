@@ -1,21 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
 import api from "../api";
 import { useParams } from "react-router-dom";
+import CreateStatistic from "./CreateStatistic";
 import CreateMatch from "./CreateMatch";
 import Stats from "./Stats";
 import { AuthContext } from "../AuthContext";
 
 const ScheduleMatches = () => {
-  const {user} = useContext(AuthContext)
-  
+  const { user } = useContext(AuthContext);
   const { tournamentId } = useParams();
-  
+
   const [matches, setMatches] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenAddMatch, setIsModalOpenAddMatch] = useState(false);
+  const [openStatsModalForMatch, setOpenStatsModalForMatch] = useState(null); // Track which match's modal is open
 
   useEffect(() => {
     getMatches();
-  }, []); //add here
+  }, []);
 
   const getMatches = async () => {
     try {
@@ -34,17 +35,17 @@ const ScheduleMatches = () => {
       {user && (
         <button
           className="px-4 pr-3 py-2 mt-2 rounded-2xl flex justify-end text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => setIsModalOpenAddMatch(true)}
         >
           Add Match
           <img src="/plus.svg" className="size-7 ml-1" alt="Plus icon" />
         </button>
       )}
 
-      {isModalOpen && (
+      {isModalOpenAddMatch && (
         <CreateMatch
           tournamentId={tournamentId}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => setIsModalOpenAddMatch(false)}
         />
       )}
 
@@ -61,7 +62,7 @@ const ScheduleMatches = () => {
                 <strong className="text-xl">Score: {match.team_1_score}</strong>
               </p>
             </div>
-            <div className=" justify-between mt-2">
+            <div className="justify-between mt-2">
               <div className="flex justify-around space-x-4 border-y py-2">
                 {match.team_1_players.map((player) => (
                   <p key={player.id} className="text-center">
@@ -80,8 +81,8 @@ const ScheduleMatches = () => {
               </p>
               <div className="flex justify-around space-x-4 border-y py-2">
                 {match.team_2_players.map((player) => (
-                  <div>
-                    <p key={player.id} className="text-center">
+                  <div key={player.id}>
+                    <p className="text-center">
                       <img
                         src="/profile-male.svg"
                         className="size-22 bg-white rounded-2xl"
@@ -93,11 +94,34 @@ const ScheduleMatches = () => {
                 ))}
               </div>
             </div>
-            <Stats
-              matchId={match.id}
-              team1PlayerIds={match.team_1_players.map((player) => player.id)}
-              team2PlayerIds={match.team_2_players.map((player) => player.id)}
-            />
+            <div className="flex justify-between flex-col">
+              <button
+                onClick={() => setOpenStatsModalForMatch(match.id)}
+                className="h-11 w-30 mx-auto mt-2 p-2 rounded-2xl text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
+              >
+                Add stats
+              </button>
+
+              {openStatsModalForMatch === match.id && ( 
+                <CreateStatistic
+                  matchId={match.id}
+                  team_1_players={match.team_1_players}
+                  team_2_players={match.team_2_players}
+                  onClose={() => setOpenStatsModalForMatch(null)}
+                />
+              )}
+              <div>
+                <Stats
+                  matchId={match.id}
+                  team1PlayerIds={match.team_1_players.map(
+                    (player) => player.id
+                  )}
+                  team2PlayerIds={match.team_2_players.map(
+                    (player) => player.id
+                  )}
+                />
+              </div>
+            </div>
           </div>
         ))}
       </div>

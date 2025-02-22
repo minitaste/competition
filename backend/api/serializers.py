@@ -30,6 +30,15 @@ class TeamCreateSerializer(serializers.ModelSerializer):
         model = Team
         fields = ["id", "name", "players", "captain", "tournament", "created_at"]
 
+    def validate_tournament(self, value):
+        if value.teams.count() > value.teams_limit:
+            raise serializers.ValidationError("Max team limit is full.")
+        return value
+    
+    def validate_players(self, value):
+        if len(value) > 4:
+            raise serializers.ValidationError("Can`t be more than 4 players.")
+        return value
 
 class TeamReadSerializer(serializers.ModelSerializer):
     players = PlayerSerializer(many=True, read_only=True)
@@ -62,6 +71,7 @@ class MatchWriteSerializer(serializers.ModelSerializer):
     tournament = serializers.PrimaryKeyRelatedField(queryset=Tournament.objects.all())
     team_1 = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
     team_2 = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
+
 
     class Meta:
         model = Match
@@ -104,7 +114,15 @@ class MatchReadSerializer(serializers.ModelSerializer):
         return PlayerSerializer(players, many=True).data
 
 
-class StatisticSerializer(serializers.ModelSerializer):
+class StatisticReadSerializer(serializers.ModelSerializer):
+    player = serializers.StringRelatedField()
+
+    class Meta:
+        model = Statistic
+        fields = "__all__"
+
+
+class StatisticWriteSerializer(serializers.ModelSerializer):
     player = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     
     class Meta:

@@ -11,7 +11,7 @@ const EditTableRow = ({ stats, onUpdate, setStatsUpdate }) => {
   const [steals, setSteals] = useState(stats.steals);
   const [blocks, setBlocks] = useState(stats.blocks);
   const [editing, setEditing] = useState(false);
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
     
 
   const handleSave = async () => {
@@ -55,7 +55,7 @@ const EditTableRow = ({ stats, onUpdate, setStatsUpdate }) => {
 
   return (
     <tr className="bg-zinc-900 text-white">
-      <td className="p-2 border">{stats.player.username}</td>
+      <td className="p-2 border">{stats.player}</td>
       <td className="p-2 border text-center">
         {editing ? (
           <input

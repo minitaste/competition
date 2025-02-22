@@ -12,7 +12,8 @@ from .serializers import (
     TeamReadSerializer,
     MatchReadSerializer,
     MatchWriteSerializer,
-    StatisticSerializer,
+    StatisticReadSerializer,
+    StatisticWriteSerializer
 )
 
 
@@ -142,13 +143,17 @@ class Schedule(generics.ListCreateAPIView):
 
 
 class StatisticView(generics.ListCreateAPIView):
-    serializer_class = StatisticSerializer
     permission_classes = [AllowAny]
 
     def get_permissions(self):
         if self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
+    
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return StatisticWriteSerializer
+        return StatisticReadSerializer
 
     def get_queryset(self):
         match_id = self.request.query_params.get("match")
@@ -162,9 +167,10 @@ class StatisticView(generics.ListCreateAPIView):
 
 class StatisticUpdateView(generics.UpdateAPIView):
     queryset = Statistic.objects.all()
-    serializer_class = StatisticSerializer
+    serializer_class = StatisticWriteSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = "pk"
+
 
     def perform_update(self, serializer):
         serializer.save()

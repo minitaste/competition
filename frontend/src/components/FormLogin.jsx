@@ -27,27 +27,25 @@ function Form({ route, method }) {
       const payload = { username, password };
       if (!isLogin) payload.email = email;
       const response = await api.post(route, payload);
-
+      
+      let accessToken;
       if (method === "login") {
         localStorage.setItem(ACCESS_TOKEN, response.data.access);
         localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
-
-        setUser({token: response.data.access})
-        
-        navigate("/");
       } else {
         const loginResponse = await api.post("/api/token/", payload);
         localStorage.setItem(ACCESS_TOKEN, loginResponse.data.access);
         localStorage.setItem(REFRESH_TOKEN, loginResponse.data.refresh);
-
-        setUser({ token: loginResponse.data.access });
-
-        
-        navigate("/");
       }
+
+      const userResponse = await api.get("/api/user/me/", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      setUser(userResponse.data);
+      navigate("/profile");
     } catch (error) {
       console.error(error);
-      setError("Invalid username/password.")
+      setError("Invalid username/password.");
     } finally {
       setLoading(false);
     }

@@ -6,6 +6,7 @@ const CreateTeam = ({ fetchTeams, tournamentId, onClose }) => {
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [teamName, setTeamName] = useState("");
   const [players, setPlayers] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     get_users();
@@ -19,14 +20,17 @@ const CreateTeam = ({ fetchTeams, tournamentId, onClose }) => {
         setPlayers(data);
         console.log(data);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.log(error);
+        console.error(error);
+      });
   };
 
   const createTeam = (e) => {
     e.preventDefault();
     const playersIds = selectedPlayers.map((player) => player.id);
-    console.log(playersIds)
-    console.log(tournamentId)
+    console.log(playersIds);
+    console.log(tournamentId);
 
     api
       .post(`/api/teams/`, {
@@ -41,18 +45,22 @@ const CreateTeam = ({ fetchTeams, tournamentId, onClose }) => {
         fetchTeams();
         onClose();
       })
-      .catch((error) =>
+      .catch((error) => {
+        setError(
+          error?.response?.data?.players?.[0] ||
+            error?.response?.data?.non_field_errors?.[0] ||
+            "Something went wrong"
+        );
         console.error(
           "Error adding team:",
           error.response ? error.response.data : error.message
-        )
-      );
+        );
+      });
   };
 
   const filteredPlayers = players.filter((player) =>
     player.username.toLowerCase().includes(search.toLowerCase())
   );
-
 
   const handleSelectPlayer = (player) => {
     if (!selectedPlayers.includes(player)) {
@@ -86,17 +94,19 @@ const CreateTeam = ({ fetchTeams, tournamentId, onClose }) => {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Players"
           />
-          <ul className="border-y border-gray-300 py-2">
-            {filteredPlayers.map((player) => (
-              <li
-                key={player.id}
-                onClick={() => handleSelectPlayer(player)}
-                className="cursor-pointer hover:bg-zinc-700 p-2 "
-              >
-                {player.username}
-              </li>
-            ))}
-          </ul>
+          {search.trim().length > 0 && (
+            <ul className="border-y border-gray-300 py-2">
+              {filteredPlayers.map((player) => (
+                <li
+                  key={player.id}
+                  onClick={() => handleSelectPlayer(player)}
+                  className="cursor-pointer hover:bg-zinc-700 p-2 "
+                >
+                  {player.username}
+                </li>
+              ))}
+            </ul>
+          )}
           <div className="">
             <ul>
               <p>Selected players:</p>
@@ -117,6 +127,7 @@ const CreateTeam = ({ fetchTeams, tournamentId, onClose }) => {
               ))}
             </ul>
           </div>
+          <p className="text-red-500 mt-1">{error}</p>
 
           <input type="submit" value="Submit" />
         </form>

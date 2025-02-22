@@ -25,7 +25,7 @@ const Stats = ({ matchId, team1PlayerIds, team2PlayerIds, onSaveSuccess }) => {
       );
       console.log(response.data);
       if (response.data.length === 0) {
-        setError("Stats hasn't updated yet.");
+        setError("Stats is not updated yet.");
         console.log("No stats found");
       }
 
@@ -54,13 +54,16 @@ const Stats = ({ matchId, team1PlayerIds, team2PlayerIds, onSaveSuccess }) => {
 
   return (
     <div className="p-2">
-      <button
-        onClick={handleCheckStats}
-        className="flex p-2 rounded-2xl text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
-      >
-        Check stats
-        <img src="/stats.svg" className="ml-1" />
-      </button>
+
+        <button
+          onClick={handleCheckStats}
+          className="flex p-2 rounded-2xl text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
+        >
+          Check stats
+          <img src="/stats.svg" className="ml-1" />
+        </button>
+
+
       {loading && <Loading />}
       {team1Stats.length ? (
         <div className="pt-2">

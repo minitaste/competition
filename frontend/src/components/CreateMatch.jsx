@@ -87,11 +87,6 @@ const CreateMatch = ({ tournamentId, onClose }) => {
   const handleSelectTeam2 = (team) => {
       setTeam2(team);
       setSearch2("");
-      
-  };
-
-  const handleRemoveTeam = (team) => {
-    setSelectedTeams(selectedTeams.filter((t) => t.id !== team.id));
   };
 
   return (

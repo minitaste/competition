@@ -7,11 +7,12 @@ const EditTeam = ({ team, fetchTeams, onClose }) => {
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [teamName, setTeamName] = useState("");
   const [players, setPlayers] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     get_users();
   }, []);
-    
+
   useEffect(() => {
     if (team) {
       setTeamName(team.name);
@@ -54,7 +55,7 @@ const EditTeam = ({ team, fetchTeams, onClose }) => {
     };
 
     if (captain) {
-      payload.captain
+      payload.captain;
     }
     api
       .patch(`/api/teams/${team.id}/`, payload)
@@ -65,12 +66,17 @@ const EditTeam = ({ team, fetchTeams, onClose }) => {
         fetchTeams();
         onClose();
       })
-      .catch((error) =>
+      .catch((error) => {
+        setError(
+          error?.response?.data?.players?.[0] ||
+            error?.response?.data?.non_field_errors?.[0] ||
+            "Something went wrong"
+        );
         console.error(
           "Error editing team:",
           error.response ? error.response.data : error.message
-        )
-      );
+        );
+      });
   };
 
   return (
@@ -95,17 +101,19 @@ const EditTeam = ({ team, fetchTeams, onClose }) => {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Players"
           />
-          <ul className="border-y border-gray-300 py-2">
-            {filteredPlayers.map((player) => (
-              <li
-                key={player.id}
-                onClick={() => handleSelectPlayer(player)}
-                className="cursor-pointer hover:bg-zinc-700 p-2"
-              >
-                {player.username}
-              </li>
-            ))}
-          </ul>
+          {search.trim().length > 0 && (
+            <ul className="border-y border-gray-300 py-2">
+              {filteredPlayers.map((player) => (
+                <li
+                  key={player.id}
+                  onClick={() => handleSelectPlayer(player)}
+                  className="cursor-pointer hover:bg-zinc-700 p-2"
+                >
+                  {player.username}
+                </li>
+              ))}
+            </ul>
+          )}
           <div className="">
             <ul>
               <p>Selected players:</p>
@@ -126,6 +134,7 @@ const EditTeam = ({ team, fetchTeams, onClose }) => {
               ))}
             </ul>
           </div>
+          <p className="text-red-500 mt-1">{error}</p>
 
           <input type="submit" value="Submit" />
         </form>
