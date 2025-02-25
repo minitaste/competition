@@ -1,4 +1,4 @@
-# Competition
+# 🏀 Competition
 
 ## Description
 **Competition** is a platform where users can create, and manage **3x3 basketball tournaments**. The platform offers various features to make organizing tournaments easier, including:
