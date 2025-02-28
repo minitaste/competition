@@ -1,6 +1,9 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+from django.views.decorators.vary import vary_on_headers
 
+from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import generics
 from rest_framework.generics import RetrieveAPIView
@@ -124,6 +127,20 @@ class UserTeams(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Team.objects.filter(players=user).distinct()
+
+    def list(self, request, *args, **kwargs):
+        user_id = self.request.user.id
+        cache_key = f'user_teams_list_{user_id}'
+
+        cached_data = cache.get(cache_key)
+        if cached_data is not None:
+            return Response(cached_data)
+
+        response = super().list(request, *args, **kwargs)
+        cache.set(cache_key, response.data, 60 * 15)
+
+        return response
+
 
 
 class Schedule(generics.ListCreateAPIView):
