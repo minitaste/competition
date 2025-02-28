@@ -1,7 +1,11 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import generics
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.exceptions import PermissionDenied
+
 
 from .models import User, Tournament, Team, Match
 from .models import Statistic
@@ -36,6 +40,8 @@ class Tournaments(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
+        import time
+        time.sleep(2)
         tournament_id = self.request.query_params.get("tournament")
         if tournament_id:
             return Tournament.objects.filter(id=tournament_id)
@@ -43,6 +49,10 @@ class Tournaments(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(organizer=self.request.user)
+
+    @method_decorator(cache_page(60 * 15, key_prefix='tournament_list'))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
     def get_permissions(self):
         if self.request.method == "POST":
