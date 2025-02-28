@@ -45,7 +45,8 @@ function Form({ route, method }) {
       navigate("/profile");
     } catch (error) {
       console.error(error);
-      setError("Invalid username/password.");
+      setError(error.response.data.username || "Invalid username/password.");
+
     } finally {
       setLoading(false);
     }

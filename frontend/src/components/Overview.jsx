@@ -1,31 +1,10 @@
-import React, { useEffect, useState } from "react";
-import api from "../api";
-import { useParams } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
 import Loading from "./Loading";
+import FinishTournament from "./FinishTournament";
+import { AuthContext } from "../AuthContext";
 
-const Overview = () => {
-  const { tournamentId } = useParams();
-
-  const [tournament, setTournament] = useState(null);
-  const [isOver, setIsOver] = useState(false);
-
-  useEffect(() => {
-    getTournament();
-  }, []);
-
-  const getTournament = async () => {
-    try {
-      const response = await api.get(
-        `/api/tournaments/?tournament=${tournamentId}`
-      );
-      setTournament(response.data[0]);
-      setIsOver(response.data[0].is_over);
-      console.log(response.data[0]);
-      console.log(isOver);
-    } catch (error) {
-      console.error("Error fetching tournament:", error);
-    }
-  };
+const Overview = ({ tournament, isOver }) => {
+  const { user } = useContext(AuthContext);
 
   return (
     <div className="text-white">
@@ -35,6 +14,7 @@ const Overview = () => {
             {tournament.name}
             <img src="/trophy-overview.svg" className="size-8" />
           </h1>
+
           <div className="p-4 border border-gray-700 bg-zinc-900/70">
             <p className="flex">
               Location: {tournament.location}
@@ -44,6 +24,11 @@ const Overview = () => {
             <p>Organizer: {tournament.organizer}</p>
             <p>Finished: {isOver ? <>Yes</> : <>No</>}</p>
           </div>
+          {user.username === tournament.organizer && (
+            <div className="text-center">
+              <FinishTournament />
+            </div>
+          )}
         </>
       ) : (
         <Loading />

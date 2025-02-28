@@ -1,22 +1,39 @@
-import React, { useContext, useState } from "react";
-import ScheduleMatches from "./ScheduleMatches";
+import React, { useContext, useEffect, useState } from "react";
 import Overview from "./Overview";
 import Teams from "./Teams";
-import FinishTournament from "./FinishTournament";
-import { AuthContext } from "../AuthContext";
+import Results from "./Results";
+import { useParams } from "react-router-dom";
+import api from "../api";
 
 const Participate = () => {
-  const {user} = useContext(AuthContext);
-  
+  const { tournamentId } = useParams();
+
   const [activeTab, setActiveTab] = useState("overview");
+
+  const [tournament, setTournament] = useState(null);
+  const [isOver, setIsOver] = useState(false);
+
+
+    useEffect(() => {
+      getTournament();
+    }, []);
+
+    const getTournament = async () => {
+      try {
+        const response = await api.get(
+          `/api/tournaments/?tournament=${tournamentId}`
+        );
+        setTournament(response.data[0]);
+        setIsOver(response.data[0].is_over);
+        console.log(response.data[0]);
+        console.log(isOver);
+      } catch (error) {
+        console.error("Error fetching tournament:", error);
+      }
+    };
 
   return (
     <div className="py-1 px-4">
-      {user && (
-        <div className="text-right">
-          <FinishTournament />
-        </div>
-      )}
       <div className="text-white">
         <div className="m-2 flex justify-center text-3xl border border-gray-700 bg-zinc-900/70">
           <button
@@ -40,21 +57,27 @@ const Participate = () => {
             Teams
           </button>
           <button
-            onClick={() => setActiveTab("schedule")}
+            onClick={() => setActiveTab("results")}
             className={`h-18 w-34 hover:cursor-pointer ${
-              activeTab === "schedule"
+              activeTab === "results"
                 ? "bg-zinc-600 border border-indigo-500"
                 : ""
             }`}
           >
-            Schedule
+            Results
           </button>
         </div>
 
         <div>
-          {activeTab === "overview" && <Overview />}
-          {activeTab === "teams" && <Teams />}
-          {activeTab === "schedule" && <ScheduleMatches />}
+          {activeTab === "overview" && (
+            <Overview tournament={tournament} isOver={isOver} />
+          )}
+          {activeTab === "teams" && (
+            <Teams />
+          )}
+          {activeTab === "results" && (
+            <Results tournamentOrganizer={tournament.organizer}/>
+          )}
         </div>
       </div>
     </div>

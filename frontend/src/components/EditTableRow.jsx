@@ -2,9 +2,9 @@ import React, { useContext, useState } from "react";
 import api from "../api";
 import { AuthContext } from "../AuthContext";
 
-const EditTableRow = ({ stats, onUpdate, setStatsUpdate }) => {
-    const {user} = useContext(AuthContext)
-    
+const EditTableRow = ({ stats, onUpdate, setStatsUpdate, tournamentOrganizer }) => {
+  const { user } = useContext(AuthContext);
+
   const [points, setPoints] = useState(stats.points);
   const [assists, setAssists] = useState(stats.assists);
   const [rebounds, setRebounds] = useState(stats.rebounds);
@@ -12,7 +12,6 @@ const EditTableRow = ({ stats, onUpdate, setStatsUpdate }) => {
   const [blocks, setBlocks] = useState(stats.blocks);
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-    
 
   const handleSave = async () => {
     setLoading(true);
@@ -32,7 +31,7 @@ const EditTableRow = ({ stats, onUpdate, setStatsUpdate }) => {
       );
       console.log(response.data);
       setEditing(false);
-      setStatsUpdate(prev => !prev); 
+      setStatsUpdate((prev) => !prev);
       if (onUpdate) {
         onUpdate();
       }
@@ -50,8 +49,7 @@ const EditTableRow = ({ stats, onUpdate, setStatsUpdate }) => {
     setSteals(stats.steals);
     setBlocks(stats.blocks);
     setEditing(false);
-    };
-    
+  };
 
   return (
     <tr className="bg-zinc-900 text-white">
@@ -116,35 +114,34 @@ const EditTableRow = ({ stats, onUpdate, setStatsUpdate }) => {
           stats.blocks
         )}
       </td>
-          {user && (
-              
-          <td className="p-2 border text-center">
-        {editing ? (
-          <>
+      {user.username === tournamentOrganizer && (
+        <td className="p-2 border text-center">
+          {editing ? (
+            <>
+              <button
+                onClick={handleSave}
+                disabled={loading}
+                className="px-2 py-1 bg-green-600 rounded hover:bg-green-700"
+              >
+                Save
+              </button>
+              <button
+                onClick={handleCancel}
+                disabled={loading}
+                className="px-2 py-1 bg-red-600 rounded hover:bg-red-700 ml-2"
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
             <button
-              onClick={handleSave}
-              disabled={loading}
-              className="px-2 py-1 bg-green-600 rounded hover:bg-green-700"
+              onClick={() => setEditing(true)}
+              className="px-2 py-1 bg-indigo-600 rounded hover:bg-indigo-700"
             >
-              Save
+              Edit
             </button>
-            <button
-              onClick={handleCancel}
-              disabled={loading}
-              className="px-2 py-1 bg-red-600 rounded hover:bg-red-700 ml-2"
-            >
-              Cancel
-            </button>
-          </>
-        ) : (
-          <button
-            onClick={() => setEditing(true)}
-            className="px-2 py-1 bg-indigo-600 rounded hover:bg-indigo-700"
-          >
-            Edit
-          </button>
-        )}
-      </td>
+          )}
+        </td>
       )}
     </tr>
   );

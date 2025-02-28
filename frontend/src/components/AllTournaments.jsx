@@ -66,12 +66,12 @@ const Tournaments = () => {
           />
           <div className="ml-3 text-stone-300 w-full leading-4">
             <div className="flex justify-between">
-              <p className="font-bold text-sm sm:text-2xl">{tournament.name}</p>
-              <p className="text-xs sm:text-2xl w-1/3">
+              <p className="font-bold text-sm sm:text-xl">{tournament.name}</p>
+              <p className="text-xs sm:text-lg w-1/3">
                 Event start: {tournament.start}
               </p>
             </div>
-            <p className="text-sm sm:text-2xl">
+            <p className="text-sm sm:text-lg">
               Location: {tournament.location}
             </p>
 

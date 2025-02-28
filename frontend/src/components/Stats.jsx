@@ -3,7 +3,7 @@ import api from "../api";
 import Loading from "./Loading";
 import EditTableRow from "./EditTableRow";
 
-const Stats = ({ matchId, team1PlayerIds, team2PlayerIds, onSaveSuccess }) => {
+const Stats = ({ matchId, team1PlayerIds, team2PlayerIds, onSaveSuccess, tournamentOrganizer }) => {
   const [team1Stats, setTeam1Stats] = useState([]);
   const [team2Stats, setTeam2Stats] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -54,15 +54,13 @@ const Stats = ({ matchId, team1PlayerIds, team2PlayerIds, onSaveSuccess }) => {
 
   return (
     <div className="p-2">
-
-        <button
-          onClick={handleCheckStats}
-          className="flex p-2 rounded-2xl text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
-        >
-          Check stats
-          <img src="/stats.svg" className="ml-1" />
-        </button>
-
+      <button
+        onClick={handleCheckStats}
+        className="flex p-2 rounded-2xl text-xl cursor-pointer items-center bg-indigo-800 hover:bg-indigo-900 text-stone-100"
+      >
+        Check stats
+        <img src="/stats.svg" className="ml-1" />
+      </button>
 
       {loading && <Loading />}
       {team1Stats.length ? (
@@ -89,6 +87,7 @@ const Stats = ({ matchId, team1PlayerIds, team2PlayerIds, onSaveSuccess }) => {
                     stats={stats}
                     onUpdate={onSaveSuccess}
                     setStatsUpdate={setStatsUpdate}
+                    tournamentOrganizer={tournamentOrganizer}
                   />
                 ))}
               </tbody>
@@ -114,6 +113,7 @@ const Stats = ({ matchId, team1PlayerIds, team2PlayerIds, onSaveSuccess }) => {
                       key={stats.id}
                       stats={stats}
                       onUpdate={onSaveSuccess}
+                      tournamentOrganizer={tournamentOrganizer}
                     />
                   ))}
                 </tbody>

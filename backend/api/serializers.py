@@ -1,6 +1,8 @@
 from .models import User, Tournament, Team, Match, Statistic
 
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+
 from datetime import date
 
 
@@ -8,7 +10,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "email", "password"]
-        extra_kwargs = {"password": {"write_only": True}}
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "username": {"validators": [UniqueValidator(queryset=User.objects.all(), message="Username already taken.")]},
+        }
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
@@ -34,11 +39,12 @@ class TeamCreateSerializer(serializers.ModelSerializer):
         if value.teams.count() > value.teams_limit:
             raise serializers.ValidationError("Max team limit is full.")
         return value
-    
+
     def validate_players(self, value):
         if len(value) > 4:
             raise serializers.ValidationError("Can`t be more than 4 players.")
         return value
+
 
 class TeamReadSerializer(serializers.ModelSerializer):
     players = PlayerSerializer(many=True, read_only=True)
@@ -71,7 +77,6 @@ class MatchWriteSerializer(serializers.ModelSerializer):
     tournament = serializers.PrimaryKeyRelatedField(queryset=Tournament.objects.all())
     team_1 = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
     team_2 = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
-
 
     class Meta:
         model = Match
@@ -124,41 +129,39 @@ class StatisticReadSerializer(serializers.ModelSerializer):
 
 class StatisticWriteSerializer(serializers.ModelSerializer):
     player = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    
+
     class Meta:
         model = Statistic
         fields = "__all__"
 
     def validate(self, data):
-        instance = getattr(self, 'instance', None)
-        player = data.get('player', instance.player if instance else None)
-        match = data.get('match', instance.match if instance else None)
-        
+        instance = getattr(self, "instance", None)
+        player = data.get("player", instance.player if instance else None)
+        match = data.get("match", instance.match if instance else None)
+
         if not instance and (not player or not match):
-            raise serializers.ValidationError(
-                "Both player and match are required"
-            )
-            
+            raise serializers.ValidationError("Both player and match are required")
+
         if instance and not (player and match):
             return data
-            
+
         is_team_player = (
-            match.team_1.players.filter(id=player.id).exists() or 
-            match.team_2.players.filter(id=player.id).exists()
+            match.team_1.players.filter(id=player.id).exists()
+            or match.team_2.players.filter(id=player.id).exists()
         )
-        
+
         if not is_team_player:
             raise serializers.ValidationError(
                 "Player must belong to one of the teams in the match"
             )
-            
+
         existing_stat = Statistic.objects.filter(player=player, match=match)
         if instance:
             existing_stat = existing_stat.exclude(id=instance.id)
-            
+
         if existing_stat.exists():
             raise serializers.ValidationError(
                 "Statistics for this player in this match already exists"
             )
-            
+
         return data
