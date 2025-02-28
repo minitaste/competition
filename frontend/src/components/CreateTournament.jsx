@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import api from "../api";
 
-
 const CreateTournament = ({ onSuccess, onClose }) => {
   const [tournamentName, setTournamentName] = useState("");
   const [start, setStart] = useState();
   const [teamsLimit, setTeamsLimit] = useState();
   const [location, setLocation] = useState();
+  const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -23,6 +23,12 @@ const CreateTournament = ({ onSuccess, onClose }) => {
         onClose();
       })
       .catch((error) => {
+        setError(
+          error?.response?.data?.players?.[0] ||
+            error?.response?.data?.non_field_errors?.[0] ||
+            "Something went wrong"
+        );
+
         console.error(
           "Error creating tournament:",
           error.response ? error.response.data : error.message
@@ -74,7 +80,13 @@ const CreateTournament = ({ onSuccess, onClose }) => {
               placeholder="Location..."
               required
             />
-            <input type="submit" value="Submit" className="hover:text-gray-400 cursor-pointer" />
+            <p className="text-red-500 mt-1">{error}</p>
+
+            <input
+              type="submit"
+              value="Submit"
+              className="hover:text-gray-400 cursor-pointer"
+            />
           </form>
         </div>
       </div>

@@ -66,14 +66,18 @@ const Tournaments = () => {
           />
           <div className="ml-3 text-stone-300 w-full leading-4">
             <div className="flex justify-between">
-              <p className="font-bold text-2xl">{tournament.name}</p>
-              <p>Event start: {tournament.start}</p>
+              <p className="font-bold text-sm sm:text-2xl">{tournament.name}</p>
+              <p className="text-xs sm:text-2xl w-1/3">
+                Event start: {tournament.start}
+              </p>
             </div>
-            <p>Location: {tournament.location}</p>
+            <p className="text-sm sm:text-2xl">
+              Location: {tournament.location}
+            </p>
 
             <Link to={`/participate/${tournament.id}`} state={{ tournament }}>
-              <div className="text-center mt-3 inline-block bg-black px-4 py-1 cursor-pointer rounded-lg text-white hover:text-gray-400 hover:drop-shadow-2xl transition-all duration-200 ease-in-out">
-                <span className="text-2xl staatliches">Play</span>
+              <div className="text-center mt-1 sm:mt-3 inline-block bg-black px-2 sm:px-4 py-1 cursor-pointer rounded-lg text-white hover:text-gray-400 hover:drop-shadow-2xl transition-all duration-200 ease-in-out">
+                <span className="text-xl sm:text-2xl staatliches">Play</span>
               </div>
             </Link>
           </div>

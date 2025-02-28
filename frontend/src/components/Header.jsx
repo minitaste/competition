@@ -2,29 +2,30 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ACCESS_TOKEN } from "../constants";
 import { AuthContext } from "../AuthContext";
+import HamburgerMenu from "./HamburgerMenu";
 
 const Header = () => {
   const [accessToken, setAccessToken] = useState(null);
   const location = useLocation();
-  
+
   useEffect(() => {
     setAccessToken(localStorage.getItem(ACCESS_TOKEN));
   }, [location]);
 
-function handleLogout() {
-  const { setUser } = useContext(AuthContext);
+  function handleLogout() {
+    const { setUser } = useContext(AuthContext);
 
-  useEffect(() => {
-    localStorage.clear();
-    setUser(null);
-  }, [setUser]);
+    useEffect(() => {
+      localStorage.clear();
+      setUser(null);
+    }, [setUser]);
 
-  return <Navigate to="/login/" />;
-}
+    return <Navigate to="/login/" />;
+  }
   return (
     <header className="h-14 fixed top-0 left-0 w-full text-white bg-black/30 px-6 py-4 z-10 border-b-2 border-zinc-900 ">
       <nav className="container mx-auto flex justify-between">
-        <div className="flex-1 flex space-x-2">
+        <div className="flex-1 flex justify-between">
           <Link
             to="/"
             className="flex hover:opacity-50 space-x-2 cursor-pointer"
@@ -32,9 +33,16 @@ function handleLogout() {
             <img className="h-6" src="/basketball1.png" alt="Logo" />
             <span>3X3 Mini</span>
           </Link>
+          <HamburgerMenu
+            accessToken={accessToken}
+            handleLogout={handleLogout}
+          />
         </div>
-        <div className="flex justify-between space-x-4">
-          <Link to="/profile" className="cursor-pointer hover:opacity-50 flex gap-1">
+        <div className="sm:flex justify-between space-x-4 hidden">
+          <Link
+            to="/profile"
+            className="cursor-pointer hover:opacity-50 flex gap-1"
+          >
             Profile
             <img className="h-6" src="/profile.svg" alt="Profile" />
           </Link>

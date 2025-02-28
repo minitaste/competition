@@ -1,7 +1,6 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
-from django.views.decorators.vary import vary_on_headers
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -43,8 +42,6 @@ class Tournaments(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        import time
-        time.sleep(2)
         tournament_id = self.request.query_params.get("tournament")
         if tournament_id:
             return Tournament.objects.filter(id=tournament_id)
